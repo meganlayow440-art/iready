@@ -62,12 +62,12 @@
         <div class="game-tile" data-category="retro" onclick="launchGame('https://tetarg.com/pong/')"><div class="tile-img" style="background:#9333ea;">🏓</div><div class="tile-title">Pong</div></div>
         <div class="game-tile" data-category="retro" onclick="launchGame('https://elgoog.im/breakout/')"><div class="tile-img" style="background:#ea580c;">🧱</div><div class="tile-title">Atari Breakout</div></div>
 
-        <!-- Media Feeds & Social -->
-        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.tiktok.com/')"><div class="tile-img" style="background:#000000;">🎵</div><div class="tile-title">TikTok</div></div>
-        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.youtube.com/')"><div class="tile-img" style="background:#ff0000;">▶️</div><div class="tile-title">YouTube</div></div>
-        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.twitch.tv/')"><div class="tile-img" style="background:#9146ff;">💜</div><div class="tile-title">Twitch</div></div>
-        <div class="game-tile" data-category="streaming" onclick="launchGame('https://discord.com/app')"><div class="tile-img" style="background:#5865f2;">💬</div><div class="tile-title">Discord</div></div>
-        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.netflix.com/')"><div class="tile-img" style="background:#e50914;">🎬</div><div class="tile-title">Netflix</div></div>
+    <!-- Media Feeds & Social -->
+        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.tiktok.com/', true)"><div class="tile-img" style="background:#000000;">🎵</div><div class="tile-title">TikTok</div></div>
+        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.youtube.com/', true)"><div class="tile-img" style="background:#ff0000;">▶️</div><div class="tile-title">YouTube</div></div>
+        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.twitch.tv/', true)"><div class="tile-img" style="background:#9146ff;">💜</div><div class="tile-title">Twitch</div></div>
+        <div class="game-tile" data-category="streaming" onclick="launchGame('https://discord.com/app', true)"><div class="tile-img" style="background:#5865f2;">💬</div><div class="tile-title">Discord</div></div>
+        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.netflix.com/', true)"><div class="tile-img" style="background:#e50914;">🎬</div><div class="tile-title">Netflix</div></div>
     </div>
 
     <a href="/" class="exit-portal">Exit to Dashboard</a>
@@ -83,9 +83,13 @@
     </div>
 
     <script>
-        function launchGame(url) {
-            document.getElementById('arcadeFrame').src = url;
-            document.getElementById('gamePlayerModal').style.display = 'flex';
+        function launchGame(url, isExternal) {
+            if (isExternal) {
+                window.open(url, '_blank');
+            } else {
+                document.getElementById('arcadeFrame').src = url;
+                document.getElementById('gamePlayerModal').style.display = 'flex';
+            }
         }
         function closeGamePlayer() {
             document.getElementById('arcadeFrame').src = '';
