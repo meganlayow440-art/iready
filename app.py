@@ -1,14 +1,18 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 
 app = Flask(__name__)
 
-# Secret credentials to unlock the disguised portal
 VALID_USER = "RigsHere"
 VALID_PASS = "GGs39"
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/signin")
+def signin_page():
+    # Dedicated IXL sign-in page route
+    return render_template("signin.html")
 
 @app.route("/verify-login", methods=["POST"])
 def verify_login():
@@ -22,7 +26,6 @@ def verify_login():
 
 @app.route("/learning-hub")
 def secret_portal():
-    # Hidden route masquerading with an educational/homework-style name
     return render_template("portal.html")
 
 if __name__ == "__main__":
