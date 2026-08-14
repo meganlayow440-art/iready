@@ -219,7 +219,7 @@
         </div>
     </div>
 
-    <!-- Coolmath Games Style Secret Portal (No URL change!) -->
+    <!-- Coolmath Games Style Secret Portal (Embeds Fixed) -->
     <div id="secretPortal">
         <div class="arcade-header">
             <h1>🎮 Retro Arcade Hub</h1>
@@ -234,11 +234,8 @@
         </div>
 
         <div class="arcade-grid" id="gameGrid">
-            <div class="game-tile" data-category="retro" onclick="launchGame('https://mariosbasement.github.io/retro-bowl/')">
-                <div class="tile-img" style="background: #1e3a8a;">🏈</div>
-                <div class="tile-title">Retro Bowl</div>
-            </div>
-            <div class="game-tile" data-category="puzzle" onclick="launchGame('https://2048game.com/')">
+            <!-- Using reliable embed endpoints -->
+            <div class="game-tile" data-category="puzzle" onclick="launchGame('https://play2048.co/')">
                 <div class="tile-img" style="background: #b45309;">🔢</div>
                 <div class="tile-title">2048</div>
             </div>
@@ -246,9 +243,13 @@
                 <div class="tile-img" style="background: #ca8a04;">🟡</div>
                 <div class="tile-title">Pac-Man</div>
             </div>
-            <div class="game-tile" data-category="action" onclick="launchGame('https://t-rex-runner.com/')">
+            <div class="game-tile" data-category="action" onclick="launchGame('https://chromedino.com/')">
                 <div class="tile-img" style="background: #15803d;">🦖</div>
                 <div class="tile-title">Dino Runner</div>
+            </div>
+            <div class="game-tile" data-category="puzzle" onclick="launchGame('https://tetris.com/play-tetris')">
+                <div class="tile-img" style="background: #4f46e5;">🧱</div>
+                <div class="tile-title">Tetris</div>
             </div>
         </div>
 
@@ -258,7 +259,7 @@
                 <button onclick="closeGamePlayer()" class="back-btn">&larr; Back to Games</button>
             </div>
             <div class="iframe-wrapper">
-                <iframe id="arcadeFrame" src=""></iframe>
+                <iframe id="arcadeFrame" src="" allowfullscreen></iframe>
             </div>
         </div>
 
