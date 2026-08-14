@@ -29,7 +29,7 @@
 
     <div class="arcade-header">
         <h1>📊 Advanced Learning Modules</h1>
-        <p>Interactive practice modules and open-source analytical simulations.</p>
+        <p>Interactive practice modules and working simulations.</p>
     </div>
 
     <div class="category-bar">
@@ -37,29 +37,20 @@
         <button class="cat-btn" onclick="filterGames('puzzle', event)">Logic & Grid</button>
         <button class="cat-btn" onclick="filterGames('action', event)">Physics & Velocity</button>
         <button class="cat-btn" onclick="filterGames('retro', event)">Classics</button>
-        <button class="cat-btn" onclick="filterGames('streaming', event)">External Tools</button>
     </div>
 
     <div class="arcade-grid" id="gameGrid">
-        <!-- Puzzle & Logic (Open-Source / Embed Friendly) -->
+        <!-- Puzzle & Logic (Working Embeds) -->
         <div class="game-tile" data-category="puzzle" onclick="launchGame('https://play2048.co/')"><div class="tile-img" style="background:#b45309;">🔢</div><div class="tile-title">2048</div></div>
         <div class="game-tile" data-category="puzzle" onclick="launchGame('https://minesweeperonline.com/')"><div class="tile-img" style="background:#0284c7;">💣</div><div class="tile-title">Minesweeper</div></div>
-        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://sudoku.com/')"><div class="tile-img" style="background:#475569;">🔢</div><div class="tile-title">Sudoku</div></div>
-        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://www.chess.com/play/computer')"><div class="tile-img" style="background:#334155;">♟️</div><div class="tile-title">Chess vs Bot</div></div>
 
-        <!-- Action & Skill -->
+        <!-- Action & Skill (Working Embeds) -->
         <div class="game-tile" data-category="action" onclick="launchGame('https://chromedino.com/')"><div class="tile-img" style="background:#15803d;">🦖</div><div class="tile-title">Dino Runner</div></div>
-        <div class="game-tile" data-category="action" onclick="launchGame('https://paper-io.com/')"><div class="tile-img" style="background:#0d9488;">📄</div><div class="tile-title">Paper.io</div></div>
-        <div class="game-tile" data-category="action" onclick="launchGame('https://slither.io/')"><div class="tile-img" style="background:#be185d;">🐍</div><div class="tile-title">Slither.io</div></div>
 
-        <!-- Retro & Classics (Open-source mirrors / embed-safe sources) -->
+        <!-- Retro & Classics (Working Embeds) -->
         <div class="game-tile" data-category="retro" onclick="launchGame('https://www.google.com/logos/2010/pacman10-i.html')"><div class="tile-img" style="background:#eab308;">🟡</div><div class="tile-title">Pac-Man</div></div>
         <div class="game-tile" data-category="retro" onclick="launchGame('https://mariosbasement.github.io/retro-bowl/')"><div class="tile-img" style="background:#1e3a8a;">🏈</div><div class="tile-title">Retro Bowl</div></div>
         <div class="game-tile" data-category="retro" onclick="launchGame('https://elgoog.im/breakout/')"><div class="tile-img" style="background:#ea580c;">🧱</div><div class="tile-title">Atari Breakout</div></div>
-
-        <!-- External Feeds (Managed via open tabs if blocking frame policies) -->
-        <div class="game-tile" data-category="streaming" onclick="launchGame('https://www.youtube.com/', true)"><div class="tile-img" style="background:#ff0000;">▶️</div><div class="tile-title">YouTube</div></div>
-        <div class="game-tile" data-category="streaming" onclick="launchGame('https://discord.com/app', true)"><div class="tile-img" style="background:#5865f2;">💬</div><div class="tile-title">Discord</div></div>
     </div>
 
     <a href="/" class="exit-portal">Exit to Dashboard</a>
@@ -75,13 +66,9 @@
     </div>
 
     <script>
-        function launchGame(url, isExternal) {
-            if (isExternal) {
-                window.open(url, '_blank');
-            } else {
-                document.getElementById('arcadeFrame').src = url;
-                document.getElementById('gamePlayerModal').style.display = 'flex';
-            }
+        function launchGame(url) {
+            document.getElementById('arcadeFrame').src = url;
+            document.getElementById('gamePlayerModal').style.display = 'flex';
         }
         function closeGamePlayer() {
             document.getElementById('arcadeFrame').src = '';
