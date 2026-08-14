@@ -188,47 +188,91 @@
             text-shadow: 0 0 5px var(--matrix-green);
         }
 
-        /* Game List Cards */
-        .game-card {
+        /* Embedded System Screen Container */
+        .arcade-viewport {
+            width: 100%;
+            height: 480px;
+            background: black;
+            border: 2px solid var(--matrix-green);
+            box-shadow: inset 0 0 20px var(--matrix-glow), 0 0 15px var(--matrix-glow);
+            position: relative;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .arcade-viewport iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .idle-screen {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .idle-screen h3 {
+            font-size: 24px;
+            text-shadow: 0 0 10px var(--matrix-green);
+            margin-bottom: 10px;
+        }
+
+        .idle-screen p {
+            color: var(--matrix-dim);
+            font-size: 14px;
+        }
+
+        /* Game Grid Selector Cards */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .game-select-card {
             border: 1px dashed var(--matrix-dim);
+            background: rgba(0, 0, 0, 0.5);
             padding: 15px;
-            margin-bottom: 15px;
-            background: rgba(0, 0, 0, 0.4);
+            text-align: center;
+            cursor: pointer;
             transition: all 0.2s;
+            border-radius: 4px;
         }
 
-        .game-card:hover {
+        .game-select-card:hover {
             border-color: var(--matrix-green);
+            background: rgba(0, 255, 102, 0.05);
             box-shadow: 0 0 10px var(--matrix-glow);
+            transform: translateY(-2px);
         }
 
-        .game-card h3 {
-            margin: 0 0 5px 0;
+        .game-select-card h4 {
             color: white;
+            margin: 0 0 5px 0;
             text-shadow: 0 0 5px var(--matrix-green);
+            font-size: 15px;
         }
 
-        .game-card p {
-            font-size: 13px;
+        .game-select-card p {
+            font-size: 11px;
             color: #88c096;
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
         }
 
-        .play-btn {
+        .launch-btn {
             background: transparent;
             color: var(--matrix-green);
             border: 1px solid var(--matrix-green);
-            padding: 6px 15px;
-            cursor: pointer;
+            padding: 4px 10px;
+            font-size: 12px;
             font-family: "Courier New", Courier, monospace;
             font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .play-btn:hover {
-            background: var(--matrix-green);
-            color: black;
+            border-radius: 3px;
         }
 
         /* Discord Interactive Widget Box */
@@ -305,7 +349,7 @@
         <header>
             <div class="logo">&gt;&gt; ROLO_SYS</div>
             <nav class="social-nav">
-                <a href="https://discord.gg" target="_blank" class="social-link">Discord</a>
+                <a href="https://discord.gg/your-invite-link" target="_blank" class="social-link">Discord</a>
                 <a href="https://twitch.tv" target="_blank" class="social-link">Twitch</a>
                 <a href="https://youtube.com" target="_blank" class="social-link">YouTube</a>
                 <a href="https://tiktok.com" target="_blank" class="social-link">TikTok</a>
@@ -313,27 +357,44 @@
         </header>
 
         <div class="dashboard-grid">
-            <!-- Left Column: Games & Hubs -->
+            <!-- Left Column: Embedded Arcade System & Game List -->
             <div>
+                <!-- Built-in Embedded System Terminal Screen -->
                 <div class="matrix-panel">
-                    <h2>// ACCESSIBLE EXPERIENCES</h2>
-                    
-                    <div class="game-card">
-                        <h3>CCBD LAND</h3>
-                        <p>Explore the custom metaverse experience, assets, and community portals.</p>
-                        <a href="#" class="play-btn">[ LAUNCH ]</a>
-                    </div>
-
-                    <div class="game-card">
-                        <h3>Matrix Grid Simulator</h3>
-                        <p>Custom physics and node processing interface built for high performance runs.</p>
-                        <a href="#" class="play-btn">[ LAUNCH ]</a>
+                    <h2>// EMBEDDED SYSTEM TERMINAL</h2>
+                    <div class="arcade-viewport" id="viewport-container">
+                        <div class="idle-screen">
+                            <h3>[ SYSTEM STANDBY ]</h3>
+                            <p>Select a simulation module from the options below to initialize runtime.</p>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Game Selection Cards -->
                 <div class="matrix-panel">
-                    <h2>// BROADCAST FEED</h2>
-                    <p style="font-size: 13px; color: #88c096;">Status: Connected to secure relay nodes. Monitoring data streams and custom module updates in real time.</p>
+                    <h2>// SELECT SIMULATION MODULE</h2>
+                    <div class="games-grid">
+                        <div class="game-select-card" onclick="launchGame('https://example.com/ccbd-land', 'CCBD LAND')">
+                            <h4>CCBD LAND</h4>
+                            <p>Metaverse Hub</p>
+                            <button class="launch-btn">[ LAUNCH ]</button>
+                        </div>
+                        <div class="game-select-card" onclick="launchGame('https://orteil.dashnet.org/cookieclicker/', 'Cookie Clicker')">
+                            <h4>Cookie Clicker</h4>
+                            <p>Resource Grid</p>
+                            <button class="launch-btn">[ LAUNCH ]</button>
+                        </div>
+                        <div class="game-select-card" onclick="launchGame('https://2048game.com/', '2048')">
+                            <h4>2048 Protocol</h4>
+                            <p>Logic Puzzle</p>
+                            <button class="launch-btn">[ LAUNCH ]</button>
+                        </div>
+                        <div class="game-select-card" onclick="launchGame('https://www.google.com/logos/2010/pacman10-i.html', 'Retro Pac-Man')">
+                            <h4>Pac-Man</h4>
+                            <p>Arcade Node</p>
+                            <button class="launch-btn">[ LAUNCH ]</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -400,7 +461,7 @@
         }
         setInterval(drawMatrix, 35);
 
-        // Access Key Verification Logic
+        // Access Key Verification Logic (includes CCBDisbest, 1023, Rigggg)
         const validKeys = ["CCBDisbest", "1023", "Rigggg", "rolo", "admin"];
 
         function verifyKey() {
@@ -431,6 +492,12 @@
                 verifyKey();
             }
         });
+
+        // Function to launch games strictly inside the embedded arcade viewport system
+        function launchGame(url, title) {
+            const viewport = document.getElementById('viewport-container');
+            viewport.innerHTML = `<iframe src="${url}" title="${title}" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>`;
+        }
     </script>
 </body>
 </html>
