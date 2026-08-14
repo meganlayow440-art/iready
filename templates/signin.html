@@ -4,24 +4,34 @@
     <meta charset="UTF-8">
     <title>Sign in to IXL</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f7f9fa; display: flex; flex-direction: column; min-height: 100vh; }
-        header { background-color: #55b700; padding: 12px 40px; display: flex; align-items: center; border-bottom: 2px solid #489e00; }
-        .logo-box { background: #ffcc00; padding: 4px 14px; border-radius: 4px; display: flex; align-items: center; cursor: pointer; text-decoration: none; }
-        .logo-text { font-size: 28px; font-weight: bold; color: #000; letter-spacing: -1px; }
-
-        .signin-container { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
-        .signin-card { background: white; width: 100%; max-width: 420px; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
-        .signin-card h1 { color: #222; font-size: 28px; font-weight: normal; margin-top: 0; margin-bottom: 25px; text-align: center; }
+        body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f7f9fa; display: flex; flex-direction: column; min-height: 100vh; }
         
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 13px; font-weight: bold; color: #333; margin-bottom: 6px; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 15px; }
+        header { background-color: #55b700; padding: 10px 30px; display: flex; align-items: center; border-bottom: 2px solid #489e00; }
+        .logo-box { background: #ffcc00; padding: 3px 12px; border-radius: 4px; display: flex; align-items: center; text-decoration: none; border-bottom: 3px solid #dfb200; }
+        .logo-text { font-size: 26px; font-weight: 900; color: #000; letter-spacing: -1.5px; }
+
+        .signin-wrapper { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; background: linear-gradient(180deg, #70ebff 0%, #f7f9fa 60%); }
+        .signin-card { background: white; width: 100%; max-width: 440px; padding: 35px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; }
+        .signin-card h1 { color: #0070f3; font-size: 28px; font-weight: normal; margin-top: 0; margin-bottom: 25px; text-align: center; }
+        
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group label { display: block; font-size: 13px; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .link-right { float: right; font-weight: normal; font-size: 12px; color: #16a34a; text-decoration: none; }
+        .link-right:hover { text-decoration: underline; }
+        
+        .form-group input { width: 100%; padding: 10px 12px; border: 1px solid #94a3b8; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
         .form-group input:focus { outline: none; border-color: #0070f3; box-shadow: 0 0 0 3px rgba(0,112,243,0.1); }
         
-        .btn-submit { background-color: #55b700; color: white; border: none; width: 100%; padding: 14px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .remember-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #333; margin-bottom: 20px; }
+        
+        .btn-submit { background-color: #55b700; color: white; border: none; width: 100%; padding: 12px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; border-bottom: 3px solid #3f8800; }
         .btn-submit:hover { background-color: #489e00; }
         
-        .error-msg { background: #ffeeec; color: #dc2626; padding: 10px; border-radius: 4px; font-size: 14px; margin-bottom: 20px; text-align: center; border: 1px solid #f9cab8; display: none; }
+        .launchcard-box { margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center; font-size: 13px; color: #555; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .launchcard-box a { color: #0070f3; text-decoration: none; font-weight: bold; }
+        .launchcard-box a:hover { text-decoration: underline; }
+
+        .error-msg { background: #ffeeec; color: #dc2626; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; text-align: center; border: 1px solid #f9cab8; display: none; }
         
         footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 20px; font-size: 13px; border-top: 4px solid #55b700; }
     </style>
@@ -34,22 +44,31 @@
         </a>
     </header>
 
-    <div class="signin-container">
+    <div class="signin-wrapper">
         <div class="signin-card">
-            <h1>Sign in to IXL</h1>
+            <h1>Sign in</h1>
             <div id="errorMsg" class="error-msg">Incorrect username or password. Please try again.</div>
             
             <div class="form-group">
-                <label>Username or email</label>
+                <label>Username <a href="#" class="link-right">Forgot username?</a></label>
                 <input type="text" id="userInput" autocomplete="off" autofocus>
             </div>
             
             <div class="form-group">
-                <label>Password</label>
+                <label>Password <a href="#" class="link-right">Forgot password?</a></label>
                 <input type="password" id="passInput">
+            </div>
+
+            <div class="remember-row">
+                <input type="checkbox" id="rememberMe" style="width: auto;">
+                <label for="rememberMe" style="margin: 0; font-weight: normal;">Remember</label>
             </div>
             
             <button type="button" class="btn-submit" onclick="checkCredentials()">Sign in</button>
+
+            <div class="launchcard-box">
+                <span>Have a LaunchCard?</span> <a href="#">Sign in here!</a>
+            </div>
         </div>
     </div>
 
@@ -59,7 +78,7 @@
 
     <script>
         async function checkCredentials() {
-            const user = document.getElementById('userInput').value;
+            const user = document.getElementById('userInput').value.trim();
             const pass = document.getElementById('passInput').value;
             const errorDiv = document.getElementById('errorMsg');
 
@@ -71,7 +90,7 @@
                 });
                 const data = await response.json();
                 if (data.success) {
-                    window.location.href = '/learning-hub';
+                    window.location.href = data.redirect;
                 } else {
                     errorDiv.style.display = 'block';
                 }
@@ -80,5 +99,7 @@
             }
         }
     </script>
+</body>
+</html>
 </body>
 </html>
