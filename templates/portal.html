@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IXL | Learning Hub & Analytics</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #0f172a; color: #f8fafc; box-sizing: border-box; }
+        .arcade-header h1 { color: #38bdf8; margin: 0 0 5px 0; }
+        .arcade-header p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+        .category-bar { display: flex; gap: 10px; justify-content: center; margin-bottom: 25px; flex-wrap: wrap; }
+        .cat-btn { background: #1e293b; color: #38bdf8; border: 1px solid #334155; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .cat-btn:hover, .cat-btn.active { background: #38bdf8; color: #0f172a; }
+        .arcade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; max-width: 1000px; margin: 0 auto; padding: 10px; }
+        .game-tile { background: #1e293b; border: 2px solid #334155; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; height: 140px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
+        .game-tile:hover { border-color: #38bdf8; transform: translateY(-3px); }
+        .tile-img { width: 100%; height: 75px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+        .tile-title { font-size: 13px; font-weight: bold; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Game Player Window */
+        #gamePlayerModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: none; flex-direction: column; z-index: 3000; padding: 15px; box-sizing: border-box; }
+        .player-top-bar { margin-bottom: 10px; }
+        .back-btn { background: #334155; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .iframe-wrapper { flex-grow: 1; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid #334155; }
+        .iframe-wrapper iframe { width: 100%; height: 100%; border: none; }
+        .exit-portal { margin: 30px auto 0 auto; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; display: block; width: 220px; text-align: center; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="arcade-header">
+        <h1>📊 Advanced Learning Modules</h1>
+        <p>Interactive practice modules and analytical simulations.</p>
+    </div>
+
+    <div class="category-bar">
+        <button class="cat-btn active" onclick="filterGames('all', event)">All Modules</button>
+        <button class="cat-btn" onclick="filterGames('puzzle', event)">Logic & Grid</button>
+        <button class="cat-btn" onclick="filterGames('action', event)">Physics & Velocity</button>
+        <button class="cat-btn" onclick="filterGames('retro', event)">Classics</button>
+    </div>
+
+    <div class="arcade-grid" id="gameGrid">
+        <!-- Puzzle & Logic -->
+        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://play2048.co/')"><div class="tile-img" style="background:#b45309;">🔢</div><div class="tile-title">2048</div></div>
+        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://tetris.com/play-tetris')"><div class="tile-img" style="background:#4f46e5;">🧱</div><div class="tile-title">Tetris</div></div>
+        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://minesweeperonline.com/')"><div class="tile-img" style="background:#0284c7;">💣</div><div class="tile-title">Minesweeper</div></div>
+        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://sudoku.com/')"><div class="tile-img" style="background:#475569;">🔢</div><div class="tile-title">Sudoku</div></div>
+        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://www.chess.com/play/computer')"><div class="tile-img" style="background:#334155;">♟️</div><div class="tile-title">Chess vs Bot</div></div>
+
+        <!-- Action & Skill -->
+        <div class="game-tile" data-category="action" onclick="launchGame('https://chromedino.com/')"><div class="tile-img" style="background:#15803d;">🦖</div><div class="tile-title">Dino Runner</div></div>
+        <div class="game-tile" data-category="action" onclick="launchGame('https://flappybird.ee/')"><div class="tile-img" style="background:#ca8a04;">🐦</div><div class="tile-title">Flappy Bird</div></div>
+        <div class="game-tile" data-category="action" onclick="launchGame('https://paper-io.com/')"><div class="tile-img" style="background:#0d9488;">📄</div><div class="tile-title">Paper.io</div></div>
+        <div class="game-tile" data-category="action" onclick="launchGame('https://slither.io/')"><div class="tile-img" style="background:#be185d;">🐍</div><div class="tile-title">Slither.io</div></div>
+        <div class="game-tile" data-category="action" onclick="launchGame('https://hole-io.com/')"><div class="tile-img" style="background:#1e293b;">🕳️</div><div class="tile-title">Hole.io</div></div>
+
+        <!-- Retro & Classics -->
+        <div class="game-tile" data-category="retro" onclick="launchGame('https://www.google.com/logos/2010/pacman10-i.html')"><div class="tile-img" style="background:#eab308;">🟡</div><div class="tile-title">Pac-Man</div></div>
+        <div class="game-tile" data-category="retro" onclick="launchGame('https://mariosbasement.github.io/retro-bowl/')"><div class="tile-img" style="background:#1e3a8a;">🏈</div><div class="tile-title">Retro Bowl</div></div>
+        <div class="game-tile" data-category="retro" onclick="launchGame('https://free-classic-games.com/snake/')"><div class="tile-img" style="background:#16a34a;">🟢</div><div class="tile-title">Classic Snake</div></div>
+        <div class="game-tile" data-category="retro" onclick="launchGame('https://tetarg.com/pong/')"><div class="tile-img" style="background:#9333ea;">🏓</div><div class="tile-title">Pong</div></div>
+        <div class="game-tile" data-category="retro" onclick="launchGame('https://elgoog.im/breakout/')"><div class="tile-img" style="background:#ea580c;">🧱</div><div class="tile-title">Atari Breakout</div></div>
+    </div>
+
+    <a href="/" class="exit-portal">Exit to Dashboard</a>
+
+    <!-- Active Game Player Window -->
+    <div id="gamePlayerModal">
+        <div class="player-top-bar">
+            <button onclick="closeGamePlayer()" class="back-btn">&larr; Back to Modules</button>
+        </div>
+        <div class="iframe-wrapper">
+            <iframe id="arcadeFrame" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        function launchGame(url) {
+            document.getElementById('arcadeFrame').src = url;
+            document.getElementById('gamePlayerModal').style.display = 'flex';
+        }
+        function closeGamePlayer() {
+            document.getElementById('arcadeFrame').src = '';
+            document.getElementById('gamePlayerModal').style.display = 'none';
+        }
+        function filterGames(category, evt) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            evt.target.classList.add('active');
+            document.querySelectorAll('.game-tile').forEach(tile => {
+                tile.style.display = (category === 'all' || tile.dataset.category === category) ? 'flex' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
