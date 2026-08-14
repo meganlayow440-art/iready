@@ -60,7 +60,7 @@
         .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 18px; cursor: pointer; color: #888; }
         .error-msg { color: #dc2626; font-size: 13px; margin-bottom: 10px; display: none; }
 
-        /* Coolmath Games Style Secret Portal (Hidden by default) */
+        /* Massive Coolmath Games Style Secret Portal */
         #secretPortal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 2000; flex-direction: column; padding: 20px; box-sizing: border-box; color: #f8fafc; overflow-y: auto; }
         .arcade-header h1 { color: #38bdf8; margin: 0 0 5px 0; }
         .arcade-header p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
@@ -69,7 +69,7 @@
         .cat-btn { background: #1e293b; color: #38bdf8; border: 1px solid #334155; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .cat-btn:hover, .cat-btn.active { background: #38bdf8; color: #0f172a; }
 
-        .arcade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; max-width: 800px; margin: 0 auto; padding: 10px; flex-grow: 1; }
+        .arcade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; max-width: 1000px; margin: 0 auto; padding: 10px; flex-grow: 1; }
         .game-tile { background: #1e293b; border: 2px solid #334155; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; height: 140px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; }
         .game-tile:hover { transform: translateY(-4px); border-color: #38bdf8; }
         .tile-img { width: 100%; height: 75px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
@@ -219,11 +219,11 @@
         </div>
     </div>
 
-    <!-- Coolmath Games Style Secret Portal (Embeds Fixed) -->
+    <!-- Massive Secret Arcade Portal -->
     <div id="secretPortal">
         <div class="arcade-header">
-            <h1>🎮 Retro Arcade Hub</h1>
-            <p>Select a category or pick a game to start playing instantly.</p>
+            <h1>🎮 Retro Arcade Hub (Massive Edition)</h1>
+            <p>Pick a category or choose from dozens of games to play instantly.</p>
         </div>
 
         <div class="category-bar">
@@ -234,22 +234,70 @@
         </div>
 
         <div class="arcade-grid" id="gameGrid">
-            <!-- Using reliable embed endpoints -->
+            <!-- Puzzle & Logic -->
             <div class="game-tile" data-category="puzzle" onclick="launchGame('https://play2048.co/')">
                 <div class="tile-img" style="background: #b45309;">🔢</div>
                 <div class="tile-title">2048</div>
             </div>
-            <div class="game-tile" data-category="retro" onclick="launchGame('https://www.google.com/logos/2010/pacman10-i.html')">
-                <div class="tile-img" style="background: #ca8a04;">🟡</div>
-                <div class="tile-title">Pac-Man</div>
+            <div class="game-tile" data-category="puzzle" onclick="launchGame('https://tetris.com/play-tetris')">
+                <div class="tile-img" style="background: #4f46e5;">🧱</div>
+                <div class="tile-title">Tetris</div>
             </div>
+            <div class="game-tile" data-category="puzzle" onclick="launchGame('https://minesweeperonline.com/')">
+                <div class="tile-img" style="background: #0284c7;">💣</div>
+                <div class="tile-title">Minesweeper</div>
+            </div>
+            <div class="game-tile" data-category="puzzle" onclick="launchGame('https://sudoku.com/')">
+                <div class="tile-img" style="background: #475569;">🔢</div>
+                <div class="tile-title">Sudoku</div>
+            </div>
+            <div class="game-tile" data-category="puzzle" onclick="launchGame('https://www.chess.com/play/computer')">
+                <div class="tile-img" style="background: #334155;">♟️</div>
+                <div class="tile-title">Chess vs Bot</div>
+            </div>
+
+            <!-- Action & Skill -->
             <div class="game-tile" data-category="action" onclick="launchGame('https://chromedino.com/')">
                 <div class="tile-img" style="background: #15803d;">🦖</div>
                 <div class="tile-title">Dino Runner</div>
             </div>
-            <div class="game-tile" data-category="puzzle" onclick="launchGame('https://tetris.com/play-tetris')">
-                <div class="tile-img" style="background: #4f46e5;">🧱</div>
-                <div class="tile-title">Tetris</div>
+            <div class="game-tile" data-category="action" onclick="launchGame('https://flappybird.ee/')">
+                <div class="tile-img" style="background: #ca8a04;">🐦</div>
+                <div class="tile-title">Flappy Bird</div>
+            </div>
+            <div class="game-tile" data-category="action" onclick="launchGame('https://paper-io.com/')">
+                <div class="tile-img" style="background: #0d9488;">📄</div>
+                <div class="tile-title">Paper.io</div>
+            </div>
+            <div class="game-tile" data-category="action" onclick="launchGame('https://slither.io/')">
+                <div class="tile-img" style="background: #be185d;">🐍</div>
+                <div class="tile-title">Slither.io</div>
+            </div>
+            <div class="game-tile" data-category="action" onclick="launchGame('https://hole-io.com/')">
+                <div class="tile-img" style="background: #1e293b;">🕳️</div>
+                <div class="tile-title">Hole.io</div>
+            </div>
+
+            <!-- Retro & Classics -->
+            <div class="game-tile" data-category="retro" onclick="launchGame('https://www.google.com/logos/2010/pacman10-i.html')">
+                <div class="tile-img" style="background: #eab308;">🟡</div>
+                <div class="tile-title">Pac-Man</div>
+            </div>
+            <div class="game-tile" data-category="retro" onclick="launchGame('https://mariosbasement.github.io/retro-bowl/')">
+                <div class="tile-img" style="background: #1e3a8a;">🏈</div>
+                <div class="tile-title">Retro Bowl</div>
+            </div>
+            <div class="game-tile" data-category="retro" onclick="launchGame('https://free-classic-games.com/snake/')">
+                <div class="tile-img" style="background: #16a34a;">🟢</div>
+                <div class="tile-title">Classic Snake</div>
+            </div>
+            <div class="game-tile" data-category="retro" onclick="launchGame('https://tetarg.com/pong/')">
+                <div class="tile-img" style="background: #9333ea;">🏓</div>
+                <div class="tile-title">Pong</div>
+            </div>
+            <div class="game-tile" data-category="retro" onclick="launchGame('https://elgoog.im/breakout/')">
+                <div class="tile-img" style="background: #ea580c;">🧱</div>
+                <div class="tile-title">Atari Breakout</div>
             </div>
         </div>
 
