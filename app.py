@@ -14,7 +14,7 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         
-        if username == 'RigsHere' and password == 'CCBD1234':
+        if username == 'RigsHere' and password == 'GGs39':
             session['authenticated'] = True
             return redirect(url_for('secret_page'))
         else:
