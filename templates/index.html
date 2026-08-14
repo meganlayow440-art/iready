@@ -4,60 +4,125 @@
     <meta charset="UTF-8">
     <title>IXL | Learning and math practice</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f7f9fa; color: #333; }
-        header { background-color: #55b700; padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #489e00; }
-        .logo-box { background: #ffcc00; padding: 4px 14px; border-radius: 4px; display: flex; align-items: center; }
-        .logo-text { font-size: 28px; font-weight: bold; color: #000; letter-spacing: -1px; }
-        .nav-links { display: flex; gap: 25px; align-items: center; }
-        .nav-links a { color: white; text-decoration: none; font-size: 15px; font-weight: bold; }
-        .nav-links a:hover { text-decoration: underline; }
-        .btn-signin { background-color: #0070f3; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: bold; }
-        .btn-membership { background-color: #e6ffed; color: #0070f3; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: bold; border: 1px solid #b7f5c9; }
-        .hero { background: linear-gradient(180deg, #44d5ff 0%, #ffffff 85%); text-align: center; padding: 50px 20px 60px 20px; }
-        .hero h1 { color: #0056b3; font-size: 42px; font-weight: normal; margin-bottom: 10px; }
-        .hero p { font-size: 18px; color: #222; max-width: 600px; margin: 0 auto; }
-        .subject-bar { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 12px 0; display: flex; justify-content: center; gap: 30px; font-weight: bold; font-size: 15px; }
-        .subject-bar a { color: #0070f3; text-decoration: none; padding: 6px 12px; border-radius: 4px; }
-        .subject-bar a:hover { background: #f0f4f8; }
-        .content-wrapper { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-        .grades-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 50px; }
-        .grade-card { background: white; border: 1px solid #b3d7ff; border-radius: 8px; padding: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .grade-card h3 { font-size: 22px; margin-top: 0; padding-bottom: 8px; border-bottom: 1px solid #eee; color: #0070f3; }
-        .grade-card ul { padding-left: 18px; margin: 10px 0 0 0; font-size: 14px; line-height: 1.6; color: #444; }
+        body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f7f9fa; color: #333; }
+        
+        /* Header styling */
+        header { background-color: #55b700; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #489e00; }
+        .logo-box { background: #ffcc00; padding: 3px 12px; border-radius: 4px; display: flex; align-items: center; text-decoration: none; border-bottom: 3px solid #dfb200; }
+        .logo-text { font-size: 26px; font-weight: 900; color: #000; letter-spacing: -1.5px; }
+        .nav-center { display: flex; gap: 28px; align-items: center; }
+        .nav-center a { color: white; text-decoration: none; font-size: 16px; font-weight: 600; }
+        .nav-center a:hover { text-decoration: underline; }
+        .nav-right { display: flex; gap: 12px; align-items: center; }
+        .btn-signin { background-color: #0070f3; color: white; padding: 7px 16px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+        .btn-signin:hover { background-color: #005bb5; }
+        .btn-membership { background-color: #e6ffed; color: #0070f3; padding: 7px 16px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 14px; border: 1px solid #b7f5c9; }
+
+        /* Search Bar Subheader */
+        .search-subheader { background: #55b700; padding: 0 30px 12px 30px; display: flex; justify-content: center; }
+        .search-box-wrap { background: white; border-radius: 20px; padding: 4px 15px; display: flex; align-items: center; width: 100%; max-width: 450px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        .search-box-wrap input { border: none; outline: none; width: 100%; font-size: 14px; padding: 6px; color: #666; }
+        .search-icon { background: #55b700; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; font-size: 12px; }
+
+        /* Hero Section */
+        .hero { background: linear-gradient(180deg, #70ebff 0%, #ffffff 85%); text-align: center; padding: 40px 20px 30px 20px; position: relative; overflow: hidden; }
+        .hero h1 { color: #0082c3; font-size: 40px; font-weight: normal; margin-bottom: 25px; }
+        
+        .clouds-container { display: flex; justify-content: center; gap: 20px; max-width: 1000px; margin: 0 auto; flex-wrap: wrap; }
+        .cloud-card { background: white; border: 2px solid #b3d7ff; border-radius: 120px; padding: 25px 30px; width: 280px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative; }
+        .cloud-card h3 { color: #0070f3; font-size: 18px; margin: 0 0 8px 0; }
+        .cloud-card p { font-size: 13px; color: #444; margin: 0; line-height: 1.4; }
+        .cloud-card .btn-member-sm { background: #55b700; color: white; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; margin-top: 15px; cursor: pointer; display: inline-block; text-decoration: none; font-size: 13px; }
+
+        /* Grade Grid Section */
+        .content-wrapper { max-width: 1150px; margin: 20px auto; padding: 0 20px; }
+        .grades-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+        .grade-card { background: white; border: 1px solid #b3d7ff; border-radius: 6px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .grade-card h3 { font-size: 20px; margin-top: 0; padding-bottom: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+        
+        /* Grade Badges */
+        .badge { background: #0082c3; color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 14px; font-weight: bold; }
+        .badge-k { background: #e67e22; }
+        .badge-1 { background: #16a34a; }
+        
+        .grade-card ul, .subject-list { padding-left: 0; list-style: none; margin: 12px 0 0 0; font-size: 13px; color: #444; }
+        .grade-card li { margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .grade-card li a { color: #0070f3; text-decoration: none; }
+        .grade-card li a:hover { text-decoration: underline; }
+
         footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 25px; font-size: 13px; border-top: 4px solid #55b700; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-box"><span class="logo-text">IXL</span></div>
-        <div class="nav-links">
+        <a href="/" class="logo-box">
+            <span class="logo-text">IXL</span>
+        </a>
+        <div class="nav-center">
             <a href="#">Learning</a>
             <a href="#">Assessment</a>
             <a href="#">Analytics</a>
-            <!-- Links straight to the separate sign-in page -->
-            <a href="/signin" class="btn-signin">Sign in</a>
+            <a href="#">Inspiration</a>
+        </div>
+        <div class="nav-right">
+            <a href="/signin" class="btn-signin">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                Sign in
+            </a>
             <a href="#" class="btn-membership">Membership</a>
         </div>
     </header>
 
-    <div class="subject-bar">
-        <a href="#">Math</a>
-        <a href="#">Language arts</a>
-        <a href="#">Science</a>
-        <a href="#">Social studies</a>
+    <div class="search-subheader">
+        <div class="search-box-wrap">
+            <input type="text" placeholder="Search topics, skills, and more">
+            <div class="search-icon">&#128269;</div>
+        </div>
     </div>
 
     <div class="hero">
-        <h1>IXL is personalized learning</h1>
-        <p>Comprehensive K-12 curriculum, individualized guidance, and real-time analytics.</p>
+        <h1>IXL <b>is</b> personalized learning</h1>
+        <div class="clouds-container">
+            <div class="cloud-card">
+                <h3>Comprehensive K-12 curriculum</h3>
+                <p>Math • Language arts • Science • Social studies • Spanish</p>
+            </div>
+            <div class="cloud-card" style="border-color: #d8b4fe;">
+                <h3 style="color: #9333ea;">Trusted by educators and parents</h3>
+                <p>Over <b>200 billion</b> questions answered. More than <b>18 million</b> students use IXL.</p>
+            </div>
+            <div class="cloud-card" style="border-color: #86efac;">
+                <h3 style="color: #15803d;">Immersive learning experience</h3>
+                <p>Analytics • Recommendations • Real-Time Diagnostic • Awards</p>
+                <a href="#" class="btn-member-sm">Become a member!</a>
+            </div>
+        </div>
     </div>
 
     <div class="content-wrapper">
         <div class="grades-grid">
-            <div class="grade-card"><h3>Pre-K</h3><ul><li>Counting objects</li><li>Shapes and sizes</li></ul></div>
-            <div class="grade-card"><h3>Kindergarten</h3><ul><li>Comparing numbers</li><li>Letter sounds</li></ul></div>
-            <div class="grade-card"><h3>First Grade</h3><ul><li>Addition within 20</li><li>Vowel sounds</li></ul></div>
+            <div class="grade-card">
+                <h3><div class="badge" style="background:#0891b2;">P</div> Pre-K</h3>
+                <ul class="subject-list">
+                    <li>Counting objects <a href="#">170 skills &gt;</a></li>
+                    <li>Shapes and sizes <a href="#">156 skills &gt;</a></li>
+                </ul>
+            </div>
+            <div class="grade-card">
+                <h3><div class="badge badge-k">K</div> Kindergarten</h3>
+                <ul class="subject-list">
+                    <li>Comparing numbers <a href="#">369 skills &gt;</a></li>
+                    <li>Letter sounds <a href="#">347 skills &gt;</a></li>
+                </ul>
+            </div>
+            <div class="grade-card">
+                <h3><div class="badge badge-1">1</div> First grade</h3>
+                <ul class="subject-list">
+                    <li>Addition within 20 <a href="#">357 skills &gt;</a></li>
+                    <li>Vowel sounds <a href="#">347 skills &gt;</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
