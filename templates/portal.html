@@ -2,94 +2,435 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>IXL | Learning Hub & Analytics</title>
+    <title>IXL | Homework</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #0f172a; color: #f8fafc; box-sizing: border-box; }
-        .arcade-header h1 { color: #38bdf8; margin: 0 0 5px 0; }
-        .arcade-header p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
-        .category-bar { display: flex; gap: 10px; justify-content: center; margin-bottom: 25px; flex-wrap: wrap; }
-        .cat-btn { background: #1e293b; color: #38bdf8; border: 1px solid #334155; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; }
-        .cat-btn:hover, .cat-btn.active { background: #38bdf8; color: #0f172a; }
-        .arcade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; max-width: 1000px; margin: 0 auto; padding: 10px; }
-        .game-tile { background: #1e293b; border: 2px solid #334155; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; height: 140px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
-        .game-tile:hover { border-color: #38bdf8; transform: translateY(-3px); }
-        .tile-img { width: 100%; height: 75px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
-        .tile-title { font-size: 13px; font-weight: bold; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        :root {
+            --matrix-green: #00ff66;
+            --matrix-dark: #050505;
+            --matrix-darker: #020202;
+            --matrix-dim: #008f33;
+            --matrix-glow: rgba(0, 255, 102, 0.4);
+        }
 
-        /* Game Player Window */
-        #gamePlayerModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: none; flex-direction: column; z-index: 3000; padding: 15px; box-sizing: border-box; }
-        .player-top-bar { margin-bottom: 10px; }
-        .back-btn { background: #334155; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .iframe-wrapper { flex-grow: 1; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid #334155; }
-        .iframe-wrapper iframe { width: 100%; height: 100%; border: none; }
-        .exit-portal { margin: 30px auto 0 auto; background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; display: block; width: 220px; text-align: center; text-decoration: none; }
+        body {
+            font-family: "Courier New", Courier, monospace;
+            background-color: var(--matrix-dark);
+            color: var(--matrix-green);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Matrix Canvas Background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        /* Access Gate Overlay */
+        #access-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--matrix-darker);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .terminal-box {
+            border: 2px solid var(--matrix-green);
+            background: rgba(0, 10, 2, 0.9);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 25px var(--matrix-glow);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .terminal-box h1 {
+            margin-top: 0;
+            font-size: 32px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .terminal-box p {
+            font-size: 14px;
+            color: var(--matrix-dim);
+            margin-bottom: 25px;
+        }
+
+        .terminal-input {
+            background: black;
+            border: 1px solid var(--matrix-green);
+            color: var(--matrix-green);
+            padding: 12px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 16px;
+            width: 80%;
+            text-align: center;
+            outline: none;
+            border-radius: 4px;
+            box-shadow: inset 0 0 5px var(--matrix-glow);
+            margin-bottom: 15px;
+        }
+
+        .terminal-btn {
+            background: var(--matrix-green);
+            color: black;
+            border: none;
+            padding: 12px 25px;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--matrix-glow);
+            transition: all 0.2s;
+        }
+
+        .terminal-btn:hover {
+            background: white;
+            box-shadow: 0 0 20px white;
+        }
+
+        #error-msg {
+            color: #ff3333;
+            font-size: 13px;
+            margin-top: 10px;
+            height: 15px;
+            text-shadow: 0 0 5px #ff3333;
+        }
+
+        /* Main App Interface (Hidden initially) */
+        #main-content {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed var(--matrix-green);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--matrix-green);
+            letter-spacing: 3px;
+        }
+
+        .social-nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link {
+            color: var(--matrix-green);
+            text-decoration: none;
+            border: 1px solid var(--matrix-dim);
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background: var(--matrix-green);
+            color: black;
+            box-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        /* Dashboard Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .matrix-panel {
+            border: 1px solid var(--matrix-dim);
+            background: rgba(0, 15, 5, 0.6);
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: inset 0 0 10px rgba(0,255,102,0.05);
+            margin-bottom: 25px;
+        }
+
+        .matrix-panel h2 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--matrix-dim);
+            padding-bottom: 8px;
+            font-size: 20px;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        /* Game List Cards */
+        .game-card {
+            border: 1px dashed var(--matrix-dim);
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            transition: all 0.2s;
+        }
+
+        .game-card:hover {
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 10px var(--matrix-glow);
+        }
+
+        .game-card h3 {
+            margin: 0 0 5px 0;
+            color: white;
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
+
+        .game-card p {
+            font-size: 13px;
+            color: #88c096;
+            margin: 0 0 10px 0;
+        }
+
+        .play-btn {
+            background: transparent;
+            color: var(--matrix-green);
+            border: 1px solid var(--matrix-green);
+            padding: 6px 15px;
+            cursor: pointer;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .play-btn:hover {
+            background: var(--matrix-green);
+            color: black;
+        }
+
+        /* Discord Interactive Widget Box */
+        .discord-widget {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #5865F2;
+            background: rgba(88, 101, 242, 0.05);
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(88, 101, 242, 0.2);
+        }
+
+        .discord-widget h3 {
+            color: #5865F2;
+            text-shadow: 0 0 8px rgba(88, 101, 242, 0.5);
+        }
+
+        .discord-btn {
+            background: #5865F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 0 10px rgba(88, 101, 242, 0.4);
+            transition: transform 0.1s;
+        }
+
+        .discord-btn:hover {
+            background: #4752c4;
+            transform: scale(1.03);
+        }
+
+        /* Footer styling */
+        footer {
+            text-align: center;
+            border-top: 1px dashed var(--matrix-dim);
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 13px;
+            color: var(--matrix-dim);
+        }
+
+        footer span {
+            color: var(--matrix-green);
+            text-shadow: 0 0 5px var(--matrix-green);
+        }
     </style>
 </head>
 <body>
 
-    <div class="arcade-header">
-        <h1>📊 Advanced Learning Modules</h1>
-        <p>Interactive practice modules and analytical simulations.</p>
-    </div>
+    <!-- Matrix Code Rain Background -->
+    <canvas id="matrix-canvas"></canvas>
 
-    <div class="category-bar">
-        <button class="cat-btn active" onclick="filterGames('all', event)">All Modules</button>
-        <button class="cat-btn" onclick="filterGames('puzzle', event)">Logic & Grid</button>
-        <button class="cat-btn" onclick="filterGames('action', event)">Physics & Velocity</button>
-        <button class="cat-btn" onclick="filterGames('retro', event)">Classics</button>
-    </div>
-
-    <div class="arcade-grid" id="gameGrid">
-        <!-- Puzzle & Logic -->
-        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://play2048.co/')"><div class="tile-img" style="background:#b45309;">🔢</div><div class="tile-title">2048</div></div>
-        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://tetris.com/play-tetris')"><div class="tile-img" style="background:#4f46e5;">🧱</div><div class="tile-title">Tetris</div></div>
-        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://minesweeperonline.com/')"><div class="tile-img" style="background:#0284c7;">💣</div><div class="tile-title">Minesweeper</div></div>
-        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://sudoku.com/')"><div class="tile-img" style="background:#475569;">🔢</div><div class="tile-title">Sudoku</div></div>
-        <div class="game-tile" data-category="puzzle" onclick="launchGame('https://www.chess.com/play/computer')"><div class="tile-img" style="background:#334155;">♟️</div><div class="tile-title">Chess vs Bot</div></div>
-
-        <!-- Action & Skill -->
-        <div class="game-tile" data-category="action" onclick="launchGame('https://chromedino.com/')"><div class="tile-img" style="background:#15803d;">🦖</div><div class="tile-title">Dino Runner</div></div>
-        <div class="game-tile" data-category="action" onclick="launchGame('https://flappybird.ee/')"><div class="tile-img" style="background:#ca8a04;">🐦</div><div class="tile-title">Flappy Bird</div></div>
-        <div class="game-tile" data-category="action" onclick="launchGame('https://paper-io.com/')"><div class="tile-img" style="background:#0d9488;">📄</div><div class="tile-title">Paper.io</div></div>
-        <div class="game-tile" data-category="action" onclick="launchGame('https://slither.io/')"><div class="tile-img" style="background:#be185d;">🐍</div><div class="tile-title">Slither.io</div></div>
-        <div class="game-tile" data-category="action" onclick="launchGame('https://hole-io.com/')"><div class="tile-img" style="background:#1e293b;">🕳️</div><div class="tile-title">Hole.io</div></div>
-
-        <!-- Retro & Classics -->
-        <div class="game-tile" data-category="retro" onclick="launchGame('https://www.google.com/logos/2010/pacman10-i.html')"><div class="tile-img" style="background:#eab308;">🟡</div><div class="tile-title">Pac-Man</div></div>
-        <div class="game-tile" data-category="retro" onclick="launchGame('https://mariosbasement.github.io/retro-bowl/')"><div class="tile-img" style="background:#1e3a8a;">🏈</div><div class="tile-title">Retro Bowl</div></div>
-        <div class="game-tile" data-category="retro" onclick="launchGame('https://free-classic-games.com/snake/')"><div class="tile-img" style="background:#16a34a;">🟢</div><div class="tile-title">Classic Snake</div></div>
-        <div class="game-tile" data-category="retro" onclick="launchGame('https://tetarg.com/pong/')"><div class="tile-img" style="background:#9333ea;">🏓</div><div class="tile-title">Pong</div></div>
-        <div class="game-tile" data-category="retro" onclick="launchGame('https://elgoog.im/breakout/')"><div class="tile-img" style="background:#ea580c;">🧱</div><div class="tile-title">Atari Breakout</div></div>
-    </div>
-
-    <a href="/" class="exit-portal">Exit to Dashboard</a>
-
-    <!-- Active Game Player Window -->
-    <div id="gamePlayerModal">
-        <div class="player-top-bar">
-            <button onclick="closeGamePlayer()" class="back-btn">&larr; Back to Modules</button>
+    <!-- Terminal Key Gate Overlay -->
+    <div id="access-gate">
+        <div class="terminal-box">
+            <h1>ROLO // SECURE ACCESS</h1>
+            <p>Enter security key to decrypt network interface.</p>
+            <input type="password" id="key-input" class="terminal-input" placeholder="ACCESS KEY">
+            <br>
+            <button class="terminal-btn" onclick="verifyKey()">DECRYPT</button>
+            <div id="error-msg"></div>
         </div>
-        <div class="iframe-wrapper">
-            <iframe id="arcadeFrame" src="" allowfullscreen></iframe>
+    </div>
+
+    <!-- Main Game & Community Hub Content -->
+    <div id="main-content">
+        <header>
+            <div class="logo">&gt;&gt; ROLO_SYS</div>
+            <nav class="social-nav">
+                <a href="https://discord.gg" target="_blank" class="social-link">Discord</a>
+                <a href="https://twitch.tv" target="_blank" class="social-link">Twitch</a>
+                <a href="https://youtube.com" target="_blank" class="social-link">YouTube</a>
+                <a href="https://tiktok.com" target="_blank" class="social-link">TikTok</a>
+            </nav>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: Games & Hubs -->
+            <div>
+                <div class="matrix-panel">
+                    <h2>// ACCESSIBLE EXPERIENCES</h2>
+                    
+                    <div class="game-card">
+                        <h3>CCBD LAND</h3>
+                        <p>Explore the custom metaverse experience, assets, and community portals.</p>
+                        <a href="#" class="play-btn">[ LAUNCH ]</a>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Matrix Grid Simulator</h3>
+                        <p>Custom physics and node processing interface built for high performance runs.</p>
+                        <a href="#" class="play-btn">[ LAUNCH ]</a>
+                    </div>
+                </div>
+
+                <div class="matrix-panel">
+                    <h2>// BROADCAST FEED</h2>
+                    <p style="font-size: 13px; color: #88c096;">Status: Connected to secure relay nodes. Monitoring data streams and custom module updates in real time.</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Community Interaction Widgets -->
+            <div>
+                <div class="matrix-panel discord-widget">
+                    <h3>// DISCORD TRANSMISSION</h3>
+                    <p style="font-size: 13px; color: #ccc; margin-bottom: 15px;">Join the command network for priority updates, access keys, and community chats.</p>
+                    <a href="https://discord.gg/your-invite-link" target="_blank" class="discord-btn">JOIN MY DISCORD</a>
+                </div>
+
+                <div class="matrix-panel">
+                    <h2>// SYSTEM STATS</h2>
+                    <ul style="padding-left: 20px; font-size: 13px; line-height: 1.6; color: #88c096;">
+                        <li>Protocol: ROLO-V3</li>
+                        <li>Security Level: Verified</li>
+                        <li>Node Status: Active</li>
+                    </ul>
+                </div>
+            </div>
         </div>
+
+        <footer>
+            made by rig (CCBDs 3rd FAN) // All rights reserved &bull; Secure Terminal v2.6
+        </footer>
     </div>
 
     <script>
-        function launchGame(url) {
-            document.getElementById('arcadeFrame').src = url;
-            document.getElementById('gamePlayerModal').style.display = 'flex';
+        // Matrix Rain Background Animation Effect
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
-        function closeGamePlayer() {
-            document.getElementById('arcadeFrame').src = '';
-            document.getElementById('gamePlayerModal').style.display = 'none';
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#@$%&';
+        const fontSize = 14;
+        let columns = canvas.width / fontSize;
+        let drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
         }
-        function filterGames(category, evt) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            evt.target.classList.add('active');
-            document.querySelectorAll('.game-tile').forEach(tile => {
-                tile.style.display = (category === 'all' || tile.dataset.category === category) ? 'flex' : 'none';
-            });
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff66';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
         }
+        setInterval(drawMatrix, 35);
+
+        // Access Key Verification Logic
+        const validKeys = ["CCBDisbest", "1023", "Rigggg", "rolo", "admin"];
+
+        function verifyKey() {
+            const inputVal = document.getElementById('key-input').value.trim();
+            const errorDiv = document.getElementById('error-msg');
+            const gate = document.getElementById('access-gate');
+            const content = document.getElementById('main-content');
+
+            if (validKeys.includes(inputVal)) {
+                errorDiv.innerText = "Access granted. Decrypting...";
+                errorDiv.style.color = "#00ff66";
+                setTimeout(() => {
+                    gate.style.opacity = '0';
+                    setTimeout(() => {
+                        gate.style.display = 'none';
+                        content.style.display = 'block';
+                    }, 500);
+                }, 600);
+            } else {
+                errorDiv.innerText = "ACCESS DENIED: Invalid Security Key.";
+                document.getElementById('key-input').value = "";
+            }
+        }
+
+        // Allow pressing Enter in the password box
+        document.getElementById('key-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                verifyKey();
+            }
+        });
     </script>
 </body>
 </html>
