@@ -7,7 +7,7 @@ ADMIN_USER = "RigSentYou"
 ADMIN_PASS = "CCBD1023"
 
 # Decoy credentials (takes you to the real-looking homework/practice page)
-DECOY_USER = "AidenMarcell3"
+DECOY_USER = "Aidenmarcell3"
 DECOY_PASS = "24010030"
 
 @app.route("/")
