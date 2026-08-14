@@ -11,7 +11,7 @@
         .logo-box { background: #ffcc00; padding: 4px 12px; border-radius: 4px; display: flex; align-items: center; text-decoration: none; border-bottom: 3px solid #dfb200; }
         .logo-text { font-size: 26px; font-weight: 900; color: #000; letter-spacing: -1.5px; }
 
-        .signin-wrapper { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; background: linear-gradient(180deg, #70ebff 0%, #f7f9fa 60%); }
+        .signin-wrapper { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 50px 20px; background: linear-gradient(180deg, #70ebff 0%, #f7f9fa 50%); }
         .signin-card { background: white; width: 100%; max-width: 440px; padding: 35px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; }
         .signin-card h1 { color: #0070f3; font-size: 28px; font-weight: normal; margin-top: 0; margin-bottom: 25px; text-align: center; }
         
@@ -34,7 +34,14 @@
 
         .error-msg { background: #ffeeec; color: #dc2626; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; text-align: center; border: 1px solid #f9cab8; display: none; }
         
-        footer { background: #1e293b; color: #94a3b8; text-align: center; padding: 20px; font-size: 13px; border-top: 4px solid #55b700; }
+        /* Large Bottom Info Section */
+        .signin-bottom-section { background: white; padding: 50px 20px; text-align: center; border-top: 1px solid #e2e8f0; }
+        .signin-bottom-section h2 { color: #0284c7; font-size: 26px; font-weight: normal; margin-bottom: 15px; }
+        .signin-bottom-section p { color: #475569; font-size: 14px; max-width: 700px; margin: 0 auto 25px auto; line-height: 1.5; }
+        .btn-outline-blue { display: inline-block; padding: 10px 24px; border: 2px solid #0284c7; color: #0284c7; border-radius: 20px; font-weight: bold; text-decoration: none; font-size: 14px; }
+        .btn-outline-blue:hover { background: #f0f9ff; }
+
+        footer { background: #ffffff; color: #334155; padding: 30px; font-size: 13px; border-top: 1px solid #e2e8f0; text-align: center; }
     </style>
 </head>
 <body>
@@ -69,6 +76,12 @@
                 <span>Have a LaunchCard?</span> <a href="#">Sign in here!</a>
             </div>
         </div>
+    </div>
+
+    <div class="signin-bottom-section">
+        <h2>Not an IXL member yet?</h2>
+        <p>Explore thousands of interactive math, language arts, science, and social studies skills that help students master concepts and build lifelong confidence.</p>
+        <a href="/" class="btn-outline-blue">Learn more about membership</a>
     </div>
 
     <footer>
