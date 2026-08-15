@@ -53,10 +53,10 @@ router.get('/home', (req, res) => {
             </style>
         </head>
         <body>
-            <!-- Top Corner Status Bar with Separate Larger Bubbles -->
+            <!-- Top Corner Status Bar with Live Ping Color Indicator -->
             <div class="status-bar">
                 <div class="status-bubble" id="live-clock">--:-- --</div>
-                <div class="status-bubble">📶 5G</div>
+                <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
                 <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
             </div>
 
@@ -78,6 +78,36 @@ router.get('/home', (req, res) => {
                 }
                 updateClock();
                 setInterval(updateClock, 1000);
+
+                // Live dynamic ping checker script
+                function checkPing() {
+                    const startTime = performance.now();
+                    // Fetches a tiny resource or header to calculate latency
+                    fetch('/i-ready/home', { method: 'HEAD', cache: 'no-store' })
+                        .then(() => {
+                            const duration = Math.round(performance.now() - startTime);
+                            const pingText = document.getElementById('ping-text');
+                            const pingIcon = document.getElementById('ping-icon');
+                            
+                            pingText.innerText = duration + ' ms';
+
+                            // Change color emoji based on latency thresholds
+                            if (duration < 100) {
+                                pingIcon.innerText = '🟢'; // Green for low ping
+                            } else if (duration < 300) {
+                                pingIcon.innerText = '🟡'; // Yellow for medium ping
+                            } else {
+                                pingIcon.innerText = '🔴'; // Red for high ping
+                            }
+                        })
+                        .catch(() => {
+                            document.getElementById('ping-text').innerText = 'Error';
+                            document.getElementById('ping-icon').innerText = '🔴';
+                        });
+                }
+                
+                checkPing();
+                setInterval(checkPing, 5000); // Check ping every 5 seconds
 
                 // Fetch real device battery if supported by browser
                 if (navigator.getBattery) {
