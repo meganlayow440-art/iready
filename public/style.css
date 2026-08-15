@@ -8,6 +8,31 @@ body {
     min-height: 100vh;
 }
 
+/* Top utility navigation bar */
+.top-nav {
+    background-color: #f1f1f1;
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 30px;
+    border-bottom: 1px solid #dcdcdc;
+}
+
+.top-nav-links a {
+    color: #0056b3;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.top-nav-links a:hover {
+    text-decoration: underline;
+}
+
+.top-nav-links .divider {
+    color: #999;
+    margin: 0 10px;
+}
+
 .main-wrapper {
     flex: 1;
     display: flex;
@@ -18,7 +43,7 @@ body {
     padding: 20px;
 }
 
-/* Login card must be 'position: relative' so the character aligns to it */
+/* Login card with relative positioning to hold the character */
 .login-card {
     background: #ffffff;
     width: 580px;
@@ -137,11 +162,11 @@ form {
     pointer-events: auto;
 }
 
-/* FIXED: Sits right on the outer right edge of the white login card */
+/* Character nested safely inside the login card wrapper */
 .character-container {
     position: absolute;
-    right: -135px; 
-    top: 130px;    
+    right: -135px;
+    top: 130px;
     z-index: 10;
     pointer-events: none;
 }
