@@ -4,6 +4,9 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+// Import the separate secret route script
+const secretRouter = require('./secret');
+
 // Middleware to parse incoming form data and JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -17,38 +20,15 @@ app.post('/login', (req, res) => {
 
     // Check your custom credentials
     if (username === 'RigSentYou' && password === 'CCBD1023') {
-        // Redirect to the authentic-looking i-Ready path
+        // Redirects to /i-ready/home which is managed by secret.js
         return res.redirect('/i-ready/home');
     } else {
         return res.redirect('/?error=invalid');
     }
 });
 
-// Secret dashboard route masked as an i-Ready student portal page
-app.get('/i-ready/home', (req, res) => {
-    res.send(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>i-Ready - Student Dashboard</title>
-            <link rel="icon" type="image/png" href="images/favicon.png">
-            <style>
-                body { background-color: #121212; color: #00ffcc; font-family: Arial, sans-serif; text-align: center; padding-top: 100px; }
-                h1 { font-size: 3rem; text-shadow: 0 0 10px #00ffcc; }
-                p { font-size: 1.2rem; color: #ffffff; }
-                a { color: #ff00ff; text-decoration: none; font-weight: bold; }
-            </style>
-        </head>
-        <body>
-            <h1>Welcome to the Secret Zone</h1>
-            <p>You have successfully bypassed authorization using the hidden credentials.</p>
-            <br>
-            <a href="/">Log out</a>
-        </body>
-        </html>
-    `);
-});
+// Mount the secret script routes
+app.use('/i-ready', secretRouter);
 
 // Fallback catch-all route for any missing paths
 app.use((req, res) => {
