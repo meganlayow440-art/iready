@@ -1,1 +1,155 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #00b4d8;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
+.banner {
+    background-color: #ffcc00;
+    text-align: center;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #222;
+}
+
+.banner a {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background: #00bcd4;
+    padding: 20px;
+}
+
+.login-card {
+    background: #ffffff;
+    width: 500px;
+    border-radius: 2px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+.card-header {
+    background-color: #e0e0e0;
+    text-align: center;
+    padding: 12px;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+}
+
+.logo-area {
+    text-align: center;
+    padding: 25px 0 10px 0;
+}
+
+.logo-area img {
+    height: 35px;
+}
+
+form {
+    padding: 20px 40px 40px 40px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.form-group label {
+    width: 90px;
+    font-size: 13px;
+    color: #444;
+}
+
+.form-group input, .form-group select {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #b0b0b0;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.forgot-link {
+    text-align: center;
+    margin: 15px 0 25px 0;
+}
+
+.forgot-link a {
+    color: #0056b3;
+    font-size: 13px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.forgot-link a:hover {
+    text-decoration: underline;
+}
+
+.go-btn-container {
+    text-align: center;
+    margin-top: 25px;
+}
+
+/* The 'Go' Button - we use the image asset */
+.go-btn-image {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    opacity: 0.5; /* Greyed out by default */
+    pointer-events: none; /* Cannot click unless active */
+    transition: opacity 0.3s ease;
+}
+
+.go-btn-image.active {
+    opacity: 1.0;
+    pointer-events: auto;
+}
+
+.character-container {
+    position: absolute;
+    right: calc(50% - 310px);
+    top: calc(50% - 90px);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+}
+
+footer {
+    background-color: #f4f4f4;
+    text-align: center;
+    padding: 15px;
+    font-size: 11px;
+    color: #444;
+    border-top: 1px solid #ddd;
+}
+
+footer a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.error-msg {
+    color: red;
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 10px;
+    display: none;
+}
