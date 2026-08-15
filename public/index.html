@@ -9,14 +9,7 @@
 </head>
 <body>
 
-    <!-- Top Warning Banner -->
-    <div class="banner">
-        Your Internet browser does not provide an optimal i-Ready experience.<br>
-        We strongly recommend upgrading to a supported browser before proceeding.<br>
-        <a href="#">View i-Ready System Requirements</a>
-    </div>
-
-    <!-- Main Workspace Container -->
+    <!-- Main Workspace Container (Banner removed) -->
     <div class="main-wrapper">
         
         <!-- Login Box Card -->
@@ -119,9 +112,9 @@
             </form>
         </div>
 
-        <!-- Floating Character Asset -->
+        <!-- Fixed & Scaled Character Asset -->
         <div class="character-container">
-            <img src="images/character.png" alt="i-Ready Character" style="height: 165px;">
+            <img src="images/character.png" alt="i-Ready Character">
         </div>
 
     </div>
@@ -151,7 +144,6 @@
                 const isPassFilled = passVal !== '';
                 const isStateSelected = stateVal !== '';
 
-                // Toggle red error borders and indicators if empty & interacted
                 if (!isUserFilled && $username.hasClass('touched')) {
                     $username.addClass('error-input');
                     $('#username-error').show();
@@ -168,7 +160,6 @@
                     $('#password-error').hide();
                 }
 
-                // Enable button only when everything is filled
                 if (isUserFilled && isPassFilled && isStateSelected) {
                     $goButton.addClass('active');
                 } else {
@@ -190,7 +181,6 @@
                 checkFormValidity();
             });
 
-            // Handle failed login display via query parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('error')) {
                 $('#error-alert').show();
