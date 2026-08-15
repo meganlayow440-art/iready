@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #00b4d8;
+    background-color: #00bcd4;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -34,7 +34,7 @@ body {
 
 .login-card {
     background: #ffffff;
-    width: 500px;
+    width: 480px;
     border-radius: 2px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     overflow: hidden;
@@ -43,51 +43,77 @@ body {
 }
 
 .card-header {
-    background-color: #e0e0e0;
+    background-color: #dcdcdc;
     text-align: center;
     padding: 12px;
-    font-size: 14px;
+    font-size: 15px;
     color: #333;
-    font-weight: bold;
+    font-weight: normal;
     border-bottom: 1px solid #ccc;
 }
 
 .logo-area {
     text-align: center;
-    padding: 25px 0 10px 0;
+    padding: 25px 0 15px 0;
 }
 
 .logo-area img {
-    height: 35px;
+    height: 38px;
 }
 
 form {
-    padding: 20px 40px 40px 40px;
+    padding: 25px 40px 35px 40px;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    position: relative;
 }
 
-.form-group label {
+.form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-row label {
     width: 90px;
-    font-size: 13px;
+    font-size: 14px;
     color: #444;
 }
 
-.form-group input, .form-group select {
+.form-row input, .form-row select {
     flex: 1;
-    padding: 8px 10px;
+    padding: 9px 12px;
     border: 1px solid #b0b0b0;
     border-radius: 3px;
     font-size: 14px;
+    outline: none;
+    background: #fff;
+}
+
+.form-row input:focus, .form-row select:focus {
+    border-color: #0070ff;
+}
+
+/* Error validation styling matching real site */
+.form-row input.error-input {
+    border: 2px solid #d32f2f;
+}
+
+.field-error-msg {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: 4px;
+    margin-left: 90px;
+    display: none;
 }
 
 .forgot-link {
     text-align: center;
-    margin: 15px 0 25px 0;
+    margin: 5px 0 25px 0;
 }
 
 .forgot-link a {
@@ -103,19 +129,19 @@ form {
 
 .go-btn-container {
     text-align: center;
-    margin-top: 25px;
+    margin-top: 15px;
 }
 
-/* The 'Go' Button - we use the image asset */
+/* The 'Go' Button image swapping */
 .go-btn-image {
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
     margin: 0;
-    opacity: 0.5; /* Greyed out by default */
-    pointer-events: none; /* Cannot click unless active */
-    transition: opacity 0.3s ease;
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
 }
 
 .go-btn-image.active {
@@ -126,14 +152,14 @@ form {
 .character-container {
     position: absolute;
     right: calc(50% - 310px);
-    top: calc(50% - 90px);
+    top: calc(50% - 70px);
     z-index: 3;
     display: flex;
     align-items: center;
 }
 
 footer {
-    background-color: #f4f4f4;
+    background-color: #f9f9f9;
     text-align: center;
     padding: 15px;
     font-size: 11px;
@@ -146,10 +172,11 @@ footer a {
     text-decoration: none;
 }
 
-.error-msg {
-    color: red;
+.top-error-banner {
+    color: #d32f2f;
     text-align: center;
     font-size: 12px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     display: none;
+    font-weight: bold;
 }
