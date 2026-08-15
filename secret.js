@@ -5,7 +5,7 @@ const router = express.Router();
 router.get('/home', (req, res) => {
     const gameParam = req.query.game;
 
-    // If a game is selected, render the embedded game view keeping the same URL route
+    // If a game is selected, render the embedded game view keeping everything contained locally
     if (gameParam) {
         const gamesList = {
             'thorns-and-balloons': { name: 'Thorns and Balloons', url: 'https://thornandballoons.com/game/index.html' }
@@ -55,6 +55,7 @@ router.get('/home', (req, res) => {
                         text-decoration: none;
                         display: inline-block;
                         transition: all 0.2s ease;
+                        cursor: pointer;
                     }
 
                     .back-bubble:hover {
@@ -104,7 +105,7 @@ router.get('/home', (req, res) => {
             </head>
             <body>
                 <div class="top-left-bar">
-                    <a href="/i-ready/home" class="back-bubble">← Back</a>
+                    <a onclick="goBack()" class="back-bubble">← Back</a>
                 </div>
 
                 <div class="status-bar">
@@ -118,6 +119,12 @@ router.get('/home', (req, res) => {
                 </div>
 
                 <script>
+                    // Keeps it seamlessly inside the dashboard view wrapper without navigating away
+                    function goBack() {
+                        history.pushState({}, '', '/i-ready/home');
+                        window.location.reload();
+                    }
+
                     function updateClock() {
                         const now = new Date();
                         let hours = now.getHours();
@@ -165,7 +172,7 @@ router.get('/home', (req, res) => {
         `);
     }
 
-    // Default Main Dashboard View with only the Thorns and Balloons game
+    // Default Main Dashboard View using Single-Page State Transitions
     res.send(`
         <!DOCTYPE html>
         <html lang="en">
@@ -272,6 +279,7 @@ router.get('/home', (req, res) => {
                     flex-direction: column;
                     align-items: center;
                     width: 260px;
+                    cursor: pointer;
                 }
 
                 .game-card:hover {
@@ -373,16 +381,22 @@ router.get('/home', (req, res) => {
                 <div class="games-section">
                     <div class="games-title">🎮 AVAILABLE GAMES</div>
                     <div class="games-grid">
-                        <a href="/i-ready/home?game=thorns-and-balloons" class="game-card">
+                        <div onclick="openGame('thorns-and-balloons')" class="game-card">
                             <div class="game-icon">🎈</div>
                             <div class="game-name">Thorns and Balloons</div>
                             <div class="game-desc">Pop balloons with sharp thorns</div>
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <script>
+                // Seamlessly swaps views dynamically without triggering external browser URL redirects
+                function openGame(gameId) {
+                    history.pushState({}, '', '/i-ready/home?game=' + gameId);
+                    window.location.reload();
+                }
+
                 function updateClock() {
                     const now = new Date();
                     let hours = now.getHours();
