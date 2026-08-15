@@ -22,7 +22,8 @@ router.get('/home', (req, res) => {
                     color: #00ff66; 
                     font-family: 'Quicksand', sans-serif; 
                     text-align: center; 
-                    padding-top: 100px; 
+                    padding-top: 80px; 
+                    padding-bottom: 50px;
                     margin: 0;
                     position: relative;
                     min-height: 100vh;
@@ -32,7 +33,7 @@ router.get('/home', (req, res) => {
                 /* Futuristic glowing grid accent effect */
                 body::before {
                     content: "";
-                    position: absolute;
+                    position: fixed;
                     top: 0; left: 0; right: 0; bottom: 0;
                     background: radial-gradient(circle at center, rgba(0,255,100,0.1) 0%, transparent 70%);
                     pointer-events: none;
@@ -41,12 +42,15 @@ router.get('/home', (req, res) => {
                 .content-container {
                     position: relative;
                     z-index: 2;
+                    max-width: 900px;
+                    margin: 0 auto;
+                    padding: 0 20px;
                 }
 
                 /* Cartoony Lime Image Styling */
                 .lime-image {
-                    width: 140px;
-                    height: 140px;
+                    width: 120px;
+                    height: 120px;
                     object-fit: contain;
                     filter: drop-shadow(0 0 20px rgba(0, 255, 100, 0.6));
                     animation: float 3s ease-in-out infinite;
@@ -54,11 +58,11 @@ router.get('/home', (req, res) => {
 
                 @keyframes float {
                     0%, 100% { transform: translateY(0px); }
-                    50% { transform: translateY(-10px); }
+                    50% { transform: translateY(-8px); }
                 }
 
                 h1 { 
-                    font-size: 4rem; 
+                    font-size: 3.5rem; 
                     letter-spacing: 4px;
                     color: #00ff66;
                     text-shadow: 0 0 15px rgba(0, 255, 100, 0.8), 0 0 30px rgba(0, 255, 100, 0.4); 
@@ -67,10 +71,74 @@ router.get('/home', (req, res) => {
                 }
 
                 p { 
-                    font-size: 1.3rem; 
+                    font-size: 1.2rem; 
                     color: #aaffcc; 
                     text-shadow: 0 0 5px rgba(0,255,100,0.3); 
                     font-weight: 700;
+                    margin-bottom: 30px;
+                }
+
+                /* Games Section Container */
+                .games-section {
+                    margin-top: 40px;
+                    text-align: left;
+                }
+
+                .games-title {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    color: #00ff66;
+                    text-shadow: 0 0 10px rgba(0,255,100,0.5);
+                    margin-bottom: 15px;
+                    text-align: center;
+                    letter-spacing: 1px;
+                }
+
+                .games-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                    gap: 20px;
+                }
+
+                /* Individual Game Card Bubble */
+                .game-card {
+                    background: rgba(0, 20, 10, 0.6);
+                    backdrop-filter: blur(5px);
+                    border: 1px solid rgba(0, 255, 100, 0.4);
+                    border-radius: 20px;
+                    padding: 20px;
+                    text-align: center;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,100,0.1);
+                    transition: all 0.2s ease;
+                    text-decoration: none;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .game-card:hover {
+                    transform: translateY(-5px);
+                    background: rgba(0, 35, 15, 0.8);
+                    border-color: #00ff66;
+                    box-shadow: 0 0 20px rgba(0, 255, 100, 0.6);
+                }
+
+                .game-icon {
+                    font-size: 2.5rem;
+                    margin-bottom: 10px;
+                }
+
+                .game-name {
+                    font-size: 1.2rem;
+                    font-weight: 700;
+                    color: #00ffcc;
+                    margin-bottom: 5px;
+                }
+
+                .game-desc {
+                    font-size: 0.9rem;
+                    color: #88cc99;
+                    font-weight: 500;
                 }
 
                 /* Top-left corner logout button styled as a bubble */
@@ -149,6 +217,33 @@ router.get('/home', (req, res) => {
                 <img src="https://api.iconify.design/noto:lime.svg" alt="Cartoony Lime" class="lime-image">
                 <h1>LIME</h1>
                 <p>made by Rig</p>
+
+                <!-- Games Section -->
+                <div class="games-section">
+                    <div class="games-title">🎮 AVAILABLE GAMES</div>
+                    <div class="games-grid">
+                        <a href="#" class="game-card">
+                            <div class="game-icon">🟩</div>
+                            <div class="game-name">CCBD LAND</div>
+                            <div class="game-desc">Explore custom worlds & assets</div>
+                        </a>
+                        <a href="#" class="game-card">
+                            <div class="game-icon">🐶</div>
+                            <div class="game-name">Adopt Pets</div>
+                            <div class="game-desc">Trade and collect rare companions</div>
+                        </a>
+                        <a href="#" class="game-card">
+                            <div class="game-icon">⚡</div>
+                            <div class="game-name">Speed Run X</div>
+                            <div class="game-desc">Test your reflexes and parkour</div>
+                        </a>
+                        <a href="#" class="game-card">
+                            <div class="game-icon">🧩</div>
+                            <div class="game-name">Neon Puzzle</div>
+                            <div class="game-desc">Cyberpunk grid matching game</div>
+                        </a>
+                    </div>
+                </div>
             </div>
 
             <script>
