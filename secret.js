@@ -8,12 +8,10 @@ router.get('/home', (req, res) => {
     // If a game is selected, render the embedded game view
     if (gameParam) {
         // Define your games data directory
-        const gamesList = {
-            'ccbd-land': { name: 'CCBD LAND', url: 'https://www.roblox.com' }, // Replace with your actual embed/game URL
-            'adopt-pets': { name: 'Adopt Pets', url: 'https://www.roblox.com' },
-            'speed-run': { name: 'Speed Run X', url: 'https://example.com' },
-            'neon-puzzle': { name: 'Neon Puzzle', url: 'https://example.com' }
-        };
+const gamesList = {
+
+    'ThornsAndBaloons': { name: 'thorns And Balloons', url: 'https://thornandballoons.com/game/index.html' }
+};
 
         const currentGame = gamesList[gameParam] || { name: 'Game', url: 'about:blank' };
 
