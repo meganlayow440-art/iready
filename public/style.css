@@ -165,7 +165,7 @@ form {
 /* Character nested safely inside the login card wrapper */
 .character-container {
     position: absolute;
-    right: -140px;
+    right: -160px;
     top: 130px;
     z-index: 10;
     pointer-events: none;
