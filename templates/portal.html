@@ -329,30 +329,35 @@
             <div class="game-grid" id="moduleGrid">
                 
                 <!-- GAMES -->
-                <div class="game-tile" data-name="cookie clicker " onclick="launchGame('https://cookie-clicker2.com/')">
+                <div class="game-tile" data-name="cookie clicker" onclick="launchGame('https://cookie-clicker2.com/')">
                     <span class="tile-category">[GAME]</span>
                     <div class="tile-img">🍪</div>
-                    <div class="tile-title">ck_clicker.exe</div>
+                    <div class="tile-title">Cookie Clicker</div>
                 </div>
                 
-                <div class="game-tile" data-name="dino runner " onclick="launchGame('https://chromedino.com/')">
+                <div class="game-tile" data-name="dino runner" onclick="launchGame('https://chromedino.com/')">
                     <span class="tile-category">[GAME]</span>
                     <div class="tile-img">🦖</div>
-                    <div class="tile-title">run_dino.bat</div>
+                    <div class="tile-title">Dino Runner</div>
                 </div>
 
-       
-
-                <div class="game-tile" data-name="minecraft classic " onclick="launchGame('https://classic.minecraft.net/')">
+                <div class="game-tile" data-name="minecraft classic" onclick="launchGame('https://classic.minecraft.net/')">
                     <span class="tile-category">[GAME]</span>
                     <div class="tile-img">⛏️</div>
-                    <div class="tile-title">mine_craft.jar</div>
+                    <div class="tile-title">Minecraft Classic</div>
                 </div>
 
-  <div class="game-tile" data-name="Python Playground" onclick="launchGame('https://www.programiz.com/python-programming/online-compiler/')">
+                <div class="game-tile" data-name="thorns and balloons" onclick="launchGame('https://html5.gamedistribution.com/rvvASMiM/a879a92025e94b2f8149e6cc86fffc2c/')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">🎈</div>
+                    <div class="tile-title">Thorns and Balloons</div>
+                </div>
+
+                <!-- DEV / UTILS -->
+                <div class="game-tile" data-name="python playground online compiler" onclick="launchGame('https://www.programiz.com/python-programming/online-compiler/')">
                     <span class="tile-category">[DEV]</span>
                     <div class="tile-img">🐍</div>
-                    <div class="tile-title">python_env.sh</div>
+                    <div class="tile-title">Python Playground</div>
                 </div>
             </div>
         </div>
@@ -473,7 +478,7 @@
                         'Authorization': `Bearer ${GROQ_API_KEY}`
                     },
                     body: JSON.stringify({
-                        model: 'openai/gpt-oss-120b', // Make sure this model string matches Groq's current available models
+                        model: 'openai/gpt-oss-120b', 
                         messages: [{ role: "user", content: text }]
                     })
                 });
