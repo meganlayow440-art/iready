@@ -208,7 +208,7 @@
         .chat-message { line-height: 1.5; font-size: 14px; }
         .msg-user::before { content: "USER@LOCAL ~$ "; color: #00ff41; font-weight: bold; }
         .msg-ai { color: #00cc33; }
-        .msg-ai::before { content: "LLAMA_AI > "; color: #008f11; font-weight: bold; }
+        .msg-ai::before { content: "GROQ_AI > "; color: #008f11; font-weight: bold; }
         .msg-sys { color: #ff003c; }
         .msg-sys::before { content: "SYSTEM > "; color: #ff003c; font-weight: bold; }
         
@@ -328,6 +328,31 @@
             
             <div class="game-grid" id="moduleGrid">
                 
+                <!-- SOCIAL & STREAMING APPS -->
+                <div class="game-tile" data-name="discord social comms" onclick="launchGame('https://discord.com/app')">
+                    <span class="tile-category">[APP]</span>
+                    <div class="tile-img">💬</div>
+                    <div class="tile-title">Discord</div>
+                </div>
+
+                <div class="game-tile" data-name="youtube video stream" onclick="launchGame('https://www.youtube.com/embed/live_stream?channel=UC_x5XG1OV2P6uZZ5FSM9Ttw')">
+                    <span class="tile-category">[APP]</span>
+                    <div class="tile-img">▶️</div>
+                    <div class="tile-title">YouTube</div>
+                </div>
+
+                <div class="game-tile" data-name="twitch live streaming" onclick="launchGame('https://player.twitch.tv/?channel=monstercat&parent=localhost')">
+                    <span class="tile-category">[APP]</span>
+                    <div class="tile-img">📺</div>
+                    <div class="tile-title">Twitch</div>
+                </div>
+
+                <div class="game-tile" data-name="tiktok short video" onclick="launchGame('https://www.tiktok.com/')">
+                    <span class="tile-category">[APP]</span>
+                    <div class="tile-img">🎵</div>
+                    <div class="tile-title">TikTok</div>
+                </div>
+
                 <!-- GAMES -->
                 <div class="game-tile" data-name="cookie clicker" onclick="launchGame('https://cookie-clicker2.com/')">
                     <span class="tile-category">[GAME]</span>
@@ -353,6 +378,54 @@
                     <div class="tile-title">Thorns and Balloons</div>
                 </div>
 
+                <div class="game-tile" data-name="tetris puzzle block" onclick="launchGame('https://tetris.com/play-tetris')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">🧩</div>
+                    <div class="tile-title">Tetris</div>
+                </div>
+
+                <div class="game-tile" data-name="pac-man arcade retro" onclick="launchGame('https://www.google.com/logos/2010/pacman10-i.html')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">🟡</div>
+                    <div class="tile-title">Pac-Man</div>
+                </div>
+
+                <div class="game-tile" data-name="slope 3d runner ball" onclick="launchGame('https://kbhgames.com/game/slope')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">⛰️</div>
+                    <div class="tile-title">Slope</div>
+                </div>
+
+                <div class="game-tile" data-name="paper.io multiplayer territory" onclick="launchGame('https://paper-io.com/')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">🗺️</div>
+                    <div class="tile-title">Paper.io</div>
+                </div>
+
+                <div class="game-tile" data-name="geoguessr map geography" onclick="launchGame('https://www.geoguessr.com/')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">🌍</div>
+                    <div class="tile-title">GeoGuessr</div>
+                </div>
+
+                <div class="game-tile" data-name="flappy bird arcade" onclick="launchGame('https://flappybird.io/')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">🐦</div>
+                    <div class="tile-title">Flappy Bird</div>
+                </div>
+
+                <div class="game-tile" data-name="subway surfers mobile run" onclick="launchGame('https://poki.com/en/g/subway-surfers')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">🛹</div>
+                    <div class="tile-title">Subway Surfers</div>
+                </div>
+
+                <div class="game-tile" data-name="temple run endless runner" onclick="launchGame('https://poki.com/en/g/temple-run-2')">
+                    <span class="tile-category">[GAME]</span>
+                    <div class="tile-img">🏃</div>
+                    <div class="tile-title">Temple Run 2</div>
+                </div>
+
                 <!-- DEV / UTILS -->
                 <div class="game-tile" data-name="python playground online compiler" onclick="launchGame('https://www.programiz.com/python-programming/online-compiler/')">
                     <span class="tile-category">[DEV]</span>
@@ -360,7 +433,7 @@
                     <div class="tile-title">Python Playground</div>
                 </div>
 
-                   <div class="game-tile" data-name="2048" onclick="launchGame('https://www.2048.org/')">
+                <div class="game-tile" data-name="2048 number puzzle" onclick="launchGame('https://www.2048.org/')">
                     <span class="tile-category">[GAME]</span>
                     <div class="tile-img">🔢</div>
                     <div class="tile-title">2048</div>
@@ -476,7 +549,7 @@
                 return;
             }
 
-            // Live API Request to Groq
+            // Live API Request to Groq (Using Llama 3 format)
             try {
                 const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
@@ -485,7 +558,7 @@
                         'Authorization': `Bearer ${GROQ_API_KEY}`
                     },
                     body: JSON.stringify({
-                        model: 'openai/gpt-oss-120b', 
+                        model: 'llama3-70b-8192', 
                         messages: [{ role: "user", content: text }]
                     })
                 });
