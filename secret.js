@@ -5,13 +5,11 @@ const router = express.Router();
 router.get('/home', (req, res) => {
     const gameParam = req.query.game;
 
-    // If a game is selected, render the embedded game view
+    // If a game is selected, render the embedded game view keeping the same URL route
     if (gameParam) {
-        // Define your games data directory
-const gamesList = {
-
-    'ThornsAndBaloons': { name: 'thorns And Balloons', url: 'https://thornandballoons.com/game/index.html' }
-};
+        const gamesList = {
+            'thorns-and-balloons': { name: 'Thorns and Balloons', url: 'https://thornandballoons.com/game/index.html' }
+        };
 
         const currentGame = gamesList[gameParam] || { name: 'Game', url: 'about:blank' };
 
@@ -36,7 +34,6 @@ const gamesList = {
                         flex-direction: column;
                     }
 
-                    /* Top-left Back button bubble */
                     .top-left-bar {
                         position: absolute;
                         top: 20px;
@@ -65,7 +62,6 @@ const gamesList = {
                         box-shadow: 0 0 15px rgba(0, 255, 100, 0.5);
                     }
 
-                    /* Top-right status bar */
                     .status-bar {
                         position: absolute;
                         top: 20px;
@@ -92,7 +88,6 @@ const gamesList = {
                         gap: 8px;
                     }
 
-                    /* Game Embed Container */
                     .embed-container {
                         flex: 1;
                         width: 100%;
@@ -108,19 +103,16 @@ const gamesList = {
                 </style>
             </head>
             <body>
-                <!-- Top-Left Back Button -->
                 <div class="top-left-bar">
                     <a href="/i-ready/home" class="back-bubble">← Back</a>
                 </div>
 
-                <!-- Top-Right Status Bar -->
                 <div class="status-bar">
                     <div class="status-bubble" id="live-clock">--:-- --</div>
                     <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
                     <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
                 </div>
 
-                <!-- Game Embed Frame -->
                 <div class="embed-container">
                     <iframe src="${currentGame.url}" title="${currentGame.name}"></iframe>
                 </div>
@@ -173,7 +165,7 @@ const gamesList = {
         `);
     }
 
-    // Default Main Dashboard View
+    // Default Main Dashboard View with only the Thorns and Balloons game
     res.send(`
         <!DOCTYPE html>
         <html lang="en">
@@ -262,9 +254,8 @@ const gamesList = {
                 }
 
                 .games-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                    gap: 20px;
+                    display: flex;
+                    justify-content: center;
                 }
 
                 .game-card {
@@ -280,6 +271,7 @@ const gamesList = {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
+                    width: 260px;
                 }
 
                 .game-card:hover {
@@ -381,25 +373,10 @@ const gamesList = {
                 <div class="games-section">
                     <div class="games-title">🎮 AVAILABLE GAMES</div>
                     <div class="games-grid">
-                        <a href="/i-ready/home?game=ccbd-land" class="game-card">
-                            <div class="game-icon">🟩</div>
-                            <div class="game-name">CCBD LAND</div>
-                            <div class="game-desc">Explore custom worlds & assets</div>
-                        </a>
-                        <a href="/i-ready/home?game=adopt-pets" class="game-card">
-                            <div class="game-icon">🐶</div>
-                            <div class="game-name">Adopt Pets</div>
-                            <div class="game-desc">Trade and collect rare companions</div>
-                        </a>
-                        <a href="/i-ready/home?game=speed-run" class="game-card">
-                            <div class="game-icon">⚡</div>
-                            <div class="game-name">Speed Run X</div>
-                            <div class="game-desc">Test your reflexes and parkour</div>
-                        </a>
-                        <a href="/i-ready/home?game=neon-puzzle" class="game-card">
-                            <div class="game-icon">🧩</div>
-                            <div class="game-name">Neon Puzzle</div>
-                            <div class="game-desc">Cyberpunk grid matching game</div>
+                        <a href="/i-ready/home?game=thorns-and-balloons" class="game-card">
+                            <div class="game-icon">🎈</div>
+                            <div class="game-name">Thorns and Balloons</div>
+                            <div class="game-desc">Pop balloons with sharp thorns</div>
                         </a>
                     </div>
                 </div>
