@@ -179,107 +179,401 @@
             background: #00ff41; 
             color: #000; 
         }
-        .warning-text { 
-            color: #ff003c; 
-            font-weight: bold; 
-            font-size: 14px; 
-            letter-spacing: 1px; 
-            text-transform: uppercase;
-            animation: pulse 1.5s infinite;
+        .warning-text { <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL // Main_Access</title>
+    <style>
+        /* Base Matrix Theme */
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Courier New', Courier, monospace; 
+            background-color: #050505; 
+            color: #00ff41; 
+            height: 100%; 
+            overflow-x: hidden; 
         }
-        @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 5px #ff003c; } 50% { opacity: 0.5; text-shadow: none; } }
+        
+        /* CRT Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
 
-        .iframe-wrapper { 
-            position: relative; 
-            flex-grow: 1; 
+        /* Header / Navbar */
+        .dash-header { 
             background: #000; 
-            border: 1px solid #008f11; 
+            border-bottom: 2px solid #00ff41; 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); 
+            position: relative;
+            z-index: 10;
         }
-        .iframe-wrapper iframe { 
-            width: 100%; height: 100%; 
-            border: none; 
-            background: #fff; /* White background prevents transparent games from disappearing */
+        .dash-header .logo-area { 
+            font-size: 22px; 
+            font-weight: bold;
+            text-shadow: 0 0 5px #00ff41;
+            letter-spacing: 2px;
+        }
+        .dash-header .logo-area span { color: #008f11; }
+        
+        .logout-btn { 
+            background: #000; 
+            color: #00ff41; 
+            padding: 8px 16px; 
+            border: 1px solid #00ff41;
+            font-family: inherit;
+            font-size: 14px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { 
+            background: #00ff41; 
+            color: #000;
+            box-shadow: 0 0 10px #00ff41;
         }
 
-        /* Loading Spinner Screen */
-        #loadingScreen { 
-            position: absolute; 
+        /* Main Container */
+        .dash-container { 
+            max-width: 1000px; 
+            margin: 20px auto; 
+            padding: 0 20px; 
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Navigation Tabs */
+        .tab-nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #008f11;
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            background: transparent;
+            color: #008f11;
+            border: 1px solid #003300;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            text-transform: uppercase;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            color: #00ff41;
+            border-color: #00ff41;
+            text-shadow: 0 0 5px #00ff41;
+            box-shadow: 0 0 10px rgba(0,255,65,0.2) inset;
+        }
+
+        /* Search Bar */
+        .search-container { 
+            margin-bottom: 25px; 
+            display: flex; 
+            align-items: center; 
+            background: rgba(0, 20, 0, 0.5);
+            padding: 10px;
+            border: 1px solid #008f11;
+        }
+        .search-container::before { 
+            content: "C:\\SEARCH> "; 
+            color: #00ff41; 
+            font-weight: bold; 
+            margin-right: 10px; 
+        }
+        .search-input { 
+            background: transparent; 
+            border: none; 
+            color: #00ff41; 
+            font-family: inherit; 
+            font-size: 16px; 
+            outline: none; 
+            flex-grow: 1; 
+        }
+        .search-input::placeholder { color: #005500; }
+        
+        /* Game / App Grid */
+        .game-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 25px; 
+        }
+        .game-tile { 
+            background: rgba(0, 20, 0, 0.5); 
+            border: 1px solid #008f11; 
+            padding: 15px; 
+            text-align: center; 
+            cursor: pointer; 
+            height: 160px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            box-sizing: border-box; 
+            transition: all 0.2s; 
+            position: relative;
+            overflow: hidden;
+        }
+        .game-tile:hover { 
+            border-color: #00ff41; 
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3) inset, 0 0 10px rgba(0, 255, 65, 0.2);
+            transform: translateY(-2px);
+        }
+        .game-tile::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 2px;
+            background: #00ff41;
+            transition: left 0.3s ease-out;
+        }
+        .game-tile:hover::before { left: 0; }
+        
+        .tile-img { 
+            width: 100%; 
+            height: 80px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 32px; 
+            background: rgba(0, 255, 65, 0.05); 
+            border-bottom: 1px solid #008f11;
+        }
+        .tile-title { 
+            font-size: 13px; 
+            font-weight: bold; 
+            margin-top: 10px; 
+            text-transform: uppercase;
+            word-wrap: break-word;
+        }
+        .tile-category {
+            font-size: 10px;
+            color: #008f11;
+            position: absolute;
+            top: 5px; right: 5px;
+        }
+
+        /* --- AI CHAT INTERFACE --- */
+        #aiTabContent { display: none; }
+        .chat-container {
+            border: 1px solid #008f11;
+            background: rgba(0, 20, 0, 0.3);
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-history {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .chat-message { line-height: 1.5; font-size: 14px; }
+        .msg-user::before { content: "USER@LOCAL ~$ "; color: #00ff41; font-weight: bold; }
+        .msg-ai { color: #00cc33; }
+        .msg-ai::before { content: "LLAMA_AI > "; color: #008f11; font-weight: bold; }
+        .msg-sys { color: #ff003c; }
+        .msg-sys::before { content: "SYSTEM > "; color: #ff003c; font-weight: bold; }
+        
+        .chat-input-area {
+            border-top: 1px dashed #008f11;
+            display: flex;
+            padding: 15px;
+            background: #050505;
+        }
+        .chat-input-area::before {
+            content: "INPUT> ";
+            color: #00ff41;
+            font-weight: bold;
+            margin-right: 10px;
+            align-self: center;
+        }
+        #aiInput {
+            background: transparent;
+            border: none;
+            color: #00ff41;
+            font-family: inherit;
+            font-size: 15px;
+            flex-grow: 1;
+            outline: none;
+        }
+        .send-btn {
+            background: #003300;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .send-btn:hover { background: #00ff41; color: #000; }
+
+        /* --- GAME PLAYER MODAL --- */
+        #gamePlayerModal { 
+            position: fixed; 
             top: 0; left: 0; 
             width: 100%; height: 100%; 
             background: #000; 
-            display: flex; 
+            display: none; 
             flex-direction: column; 
-            justify-content: center; 
+            z-index: 3000; 
+            padding: 10px; 
+            box-sizing: border-box; 
+        }
+        .player-top-bar { 
+            display: flex; 
+            justify-content: space-between; 
             align-items: center; 
-            z-index: 10; 
+            margin-bottom: 10px; 
+            background: #050505; 
+            padding: 10px 20px; 
+            border: 1px solid #008f11; 
+        }
+        .back-btn { 
+            background: transparent; 
+            color: #00ff41; 
+            border: 1px solid #00ff41; 
+            padding: 8px 16px; 
+            cursor: pointer; 
+            font-family: inherit;
             font-weight: bold; 
-            font-size: 16px; 
-            gap: 15px; 
-            transition: opacity 0.3s ease; 
+            text-transform: uppercase;
         }
-        .spinner { 
-            width: 40px; height: 40px; 
-            border: 3px solid #003300; 
-            border-top: 3px solid #00ff41; 
-            border-radius: 50%; 
-            animation: spin 0.8s linear infinite; 
+        .back-btn:hover { background: #00ff41; color: #000; }
+        .warning-text { color: #ff003c; font-weight: bold; font-size: 14px; letter-spacing: 1px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; text-shadow: 0 0 5px #ff003c; } 50% { opacity: 0.5; text-shadow: none; } }
+
+        .iframe-wrapper { position: relative; flex-grow: 1; background: #000; border: 1px solid #008f11; }
+        .iframe-wrapper iframe { width: 100%; height: 100%; border: none; background: #fff; }
+
+        /* Loading Spinner */
+        #loadingScreen { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 10; 
+            font-weight: bold; font-size: 16px; gap: 15px; transition: opacity 0.3s ease; 
         }
+        .spinner { width: 40px; height: 40px; border: 3px solid #003300; border-top: 3px solid #00ff41; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .typing-cursor::after {
-            content: '_';
-            animation: blink 1s infinite;
-        }
+        .typing-cursor::after { content: '_'; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; border-left: 1px solid #003300; }
+        ::-webkit-scrollbar-thumb { background: #008f11; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ff41; }
     </style>
 </head>
 <body>
 
-    <div id="dashboardView">
-        <div class="dash-header">
-            <div class="logo-area">
-                SYS.<span>ADMIN</span> // TERMINAL
-            </div>
-            <button class="logout-btn" onclick="alert('CONNECTION_TERMINATED')">Disconnect</button>
+    <div class="dash-header">
+        <div class="logo-area">SYS.<span>ADMIN</span> // TERMINAL</div>
+        <button class="logout-btn" onclick="alert('CONNECTION_TERMINATED')">Disconnect</button>
+    </div>
+
+    <div class="dash-container">
+        
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('modules', this)">./executables</button>
+            <button class="tab-btn" onclick="switchTab('ai', this)">./ai_chat_link</button>
         </div>
 
-        <div class="dash-container">
-            <div class="path-title typing-cursor">execute_modules.bat</div>
+        <!-- ================= MODULES (GAMES & APPS) TAB ================= -->
+        <div id="modulesTabContent">
             
-            <div class="game-grid">
-                <!-- Executable Embeds -->
-                <div class="game-tile" onclick="launchGame('https://cookie-clicker2.com/')">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Query games, apps, scripts..." onkeyup="filterModules()">
+            </div>
+            
+            <div class="game-grid" id="moduleGrid">
+                
+                <!-- GAMES -->
+                <div class="game-tile" data-name="cookie clicker ck_clicker.exe" onclick="launchGame('https://cookie-clicker2.com/')">
+                    <span class="tile-category">[GAME]</span>
                     <div class="tile-img">🍪</div>
                     <div class="tile-title">ck_clicker.exe</div>
                 </div>
                 
-                <div class="game-tile" onclick="launchGame('https://chromedino.com/')">
+                <div class="game-tile" data-name="dino runner run_dino.bat" onclick="launchGame('https://chromedino.com/')">
+                    <span class="tile-category">[GAME]</span>
                     <div class="tile-img">🦖</div>
                     <div class="tile-title">run_dino.bat</div>
                 </div>
 
-                <div class="game-tile" onclick="launchGame('https://thornandballoons.com/game/index.html')">
-                    <div class="tile-img">🎈</div>
-                    <div class="tile-title">pop_script.sh</div>
-                </div>
-
-                <div class="game-tile" onclick="launchGame('https://snake.io/')">
+                <div class="game-tile" data-name="snake io snake_protocol.sys" onclick="launchGame('https://snake.io/')">
+                    <span class="tile-category">[GAME]</span>
                     <div class="tile-img">🐍</div>
                     <div class="tile-title">snake_protocol.sys</div>
                 </div>
 
-                <div class="game-tile" onclick="launchGame('https://classic.minecraft.net/')">
+                <div class="game-tile" data-name="minecraft classic mine_craft.jar" onclick="launchGame('https://classic.minecraft.net/')">
+                    <span class="tile-category">[GAME]</span>
                     <div class="tile-img">⛏️</div>
                     <div class="tile-title">mine_craft.jar</div>
                 </div>
 
-                <!-- Direct Link (Opens in new tab) -->
-                <div class="game-tile" onclick="window.open('https://www.roblox.com/home', '_blank')">
+                <!-- APPS & UTILS -->
+                <div class="game-tile" data-name="roblox client rbx_client.exe game" onclick="window.open('https://www.roblox.com/home', '_blank')">
+                    <span class="tile-category">[APP]</span>
                     <div class="tile-img" style="filter: grayscale(100%) sepia(100%) hue-rotate(80deg);">🟥</div>
                     <div class="tile-title">rbx_client.exe</div>
                 </div>
+
+                <div class="game-tile" data-name="bloxstrap bootstrapper mod" onclick="alert('Module requires local execution.')">
+                    <span class="tile-category">[SYS_APP]</span>
+                    <div class="tile-img">⚙️</div>
+                    <div class="tile-title">bloxstrap.exe</div>
+                </div>
+
+                <div class="game-tile" data-name="blender 3d model render" onclick="alert('Module requires local execution.')">
+                    <span class="tile-category">[APP]</span>
+                    <div class="tile-img">🧊</div>
+                    <div class="tile-title">blender_3d.sh</div>
+                </div>
+
+                <div class="game-tile" data-name="python script shell code" onclick="alert('Module requires local execution.')">
+                    <span class="tile-category">[DEV]</span>
+                    <div class="tile-img">🐍</div>
+                    <div class="tile-title">python_env.sh</div>
+                </div>
             </div>
         </div>
+
+        <!-- ================= AI CHAT (GROQ / OLLAMA) TAB ================= -->
+        <div id="aiTabContent">
+            <div class="chat-container">
+                <div class="chat-history" id="chatHistory">
+                    <div class="chat-message msg-sys">OLLAMA/GROQ BRIDGE INITIALIZED. Awaiting user input...</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="aiInput" placeholder="Enter command or prompt..." onkeypress="handleChatEnter(event)">
+                    <button class="send-btn" onclick="sendAIMessage()">EXECUTE</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- ================= GAME PLAYER MODAL ================= -->
@@ -299,7 +593,98 @@
 
     <!-- ================= SCRIPTS ================= -->
     <script>
-        // Launch Game in Fullscreen Modal
+        /* --- TAB SWITCHING LOGIC --- */
+        function switchTab(tab, btnElement) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Update content
+            if(tab === 'modules') {
+                document.getElementById('modulesTabContent').style.display = 'block';
+                document.getElementById('aiTabContent').style.display = 'none';
+            } else if (tab === 'ai') {
+                document.getElementById('modulesTabContent').style.display = 'none';
+                document.getElementById('aiTabContent').style.display = 'block';
+                document.getElementById('aiInput').focus();
+            }
+        }
+
+        /* --- SEARCH/FILTER LOGIC --- */
+        function filterModules() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let tiles = document.querySelectorAll('.game-tile');
+            
+            tiles.forEach(tile => {
+                // Check the hidden 'data-name' attribute which contains keywords
+                let searchTags = tile.getAttribute('data-name').toLowerCase();
+                let title = tile.querySelector('.tile-title').innerText.toLowerCase();
+                
+                if (searchTags.includes(input) || title.includes(input)) {
+                    tile.style.display = "flex";
+                } else {
+                    tile.style.display = "none";
+                }
+            });
+        }
+
+        /* --- AI CHAT LOGIC (Ollama/Groq) --- */
+        function handleChatEnter(e) {
+            if (e.key === 'Enter') sendAIMessage();
+        }
+
+        function appendMessage(sender, text, msgClass) {
+            const history = document.getElementById('chatHistory');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ${msgClass}`;
+            msgDiv.innerText = text;
+            history.appendChild(msgDiv);
+            history.scrollTop = history.scrollHeight;
+            return msgDiv; // Return element so we can remove it if it's a loading indicator
+        }
+
+        async function sendAIMessage() {
+            const inputField = document.getElementById('aiInput');
+            const text = inputField.value.trim();
+            if (!text) return;
+
+            // 1. Post user message
+            appendMessage('USER', text, 'msg-user');
+            inputField.value = '';
+
+            // 2. Show loading indicator
+            const loadingMsg = appendMessage('SYS', 'Establishing connection to LLM...', 'msg-sys');
+
+            // 3. API Request (Setup for local Ollama running on port 11434)
+            // If you are using Groq, change the URL to 'https://api.groq.com/openai/v1/chat/completions' 
+            // and add your Authorization header: 'Bearer YOUR_GROQ_API_KEY'
+            try {
+                const response = await fetch('http://localhost:11434/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'llama3', // Change to your installed Ollama model
+                        prompt: text,
+                        stream: false
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    loadingMsg.remove();
+                    appendMessage('AI', data.response, 'msg-ai');
+                } else {
+                    throw new Error("Connection failed");
+                }
+
+            } catch (error) {
+                // Fallback error handling if Ollama isn't running locally
+                loadingMsg.remove();
+                appendMessage('SYS', `CONNECTION ERROR: Local Ollama instance not detected on port 11434. \n\nTo make this work, ensure Ollama is running in your terminal ('ollama run llama3'), or swap the fetch URL in the code to your Groq API endpoint.`, 'msg-sys');
+            }
+        }
+
+        /* --- GAME LAUNCHER LOGIC --- */
         function launchGame(url) {
             const loader = document.getElementById('loadingScreen');
             loader.style.display = 'flex';
@@ -309,7 +694,6 @@
             document.getElementById('gamePlayerModal').style.display = 'flex';
         }
 
-        // Hide Spinner when iframe is loaded
         function hideLoader() {
             const loader = document.getElementById('loadingScreen');
             loader.style.opacity = '0';
@@ -320,11 +704,12 @@
             }, 300);
         }
 
-        // Close Game Modal
         function closeGamePlayer() {
             document.getElementById('arcadeFrame').src = '';
             document.getElementById('gamePlayerModal').style.display = 'none';
         }
     </script>
+</body>
+</html>
 </body>
 </html>
