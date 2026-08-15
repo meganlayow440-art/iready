@@ -4,28 +4,26 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// Middleware to parse form data and JSON
+// Middleware to parse incoming form data and JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Handle login post request
+// Handle the login form submission
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
-    // Check custom credentials
+    // Check your custom credentials
     if (username === 'RigSentYou' && password === 'CCBD1023') {
-        // Send them to the hidden section
         return res.redirect('/secret-dashboard');
     } else {
-        // Send back to index with a query error or reload (simple version redirects back)
         return res.redirect('/?error=invalid');
     }
 });
 
-// Secret dashboard route (hidden part of the site)
+// Secret dashboard route (the hidden part of the site)
 app.get('/secret-dashboard', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -48,6 +46,11 @@ app.get('/secret-dashboard', (req, res) => {
         </body>
         </html>
     `);
+});
+
+// Fallback catch-all route for any missing paths
+app.use((req, res) => {
+    res.status(404).send("Page not found. Go back to <a href='/'>Home</a>.");
 });
 
 app.listen(PORT, () => {
