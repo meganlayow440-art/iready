@@ -3,14 +3,186 @@ const router = express.Router();
 
 // Secret dashboard route masked as an i-Ready student portal page
 router.get('/home', (req, res) => {
+    const gameParam = req.query.game;
+
+    // If a game is selected, render the embedded game view
+    if (gameParam) {
+        // Define your games data directory
+        const gamesList = {
+            'ccbd-land': { name: 'CCBD LAND', url: 'https://www.roblox.com' }, // Replace with your actual embed/game URL
+            'adopt-pets': { name: 'Adopt Pets', url: 'https://www.roblox.com' },
+            'speed-run': { name: 'Speed Run X', url: 'https://example.com' },
+            'neon-puzzle': { name: 'Neon Puzzle', url: 'https://example.com' }
+        };
+
+        const currentGame = gamesList[gameParam] || { name: 'Game', url: 'about:blank' };
+
+        return res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>i-Ready - ${currentGame.name}</title>
+                <link rel="icon" type="image/png" href="/images/favicon.png">
+                <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+                <style>
+                    body { 
+                        background-color: #050f05; 
+                        margin: 0;
+                        padding-top: 80px;
+                        height: 100vh;
+                        box-sizing: border-box;
+                        font-family: 'Quicksand', sans-serif;
+                        overflow: hidden;
+                        display: flex;
+                        flex-direction: column;
+                    }
+
+                    /* Top-left Back button bubble */
+                    .top-left-bar {
+                        position: absolute;
+                        top: 20px;
+                        left: 25px;
+                        z-index: 10;
+                    }
+
+                    .back-bubble {
+                        background: rgba(0, 20, 10, 0.6);
+                        backdrop-filter: blur(5px);
+                        padding: 12px 22px;
+                        border-radius: 30px;
+                        border: 1px solid rgba(0, 255, 100, 0.4);
+                        font-size: 1.1rem;
+                        font-weight: 700;
+                        color: #00ffcc;
+                        letter-spacing: 0.5px;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,100,0.1);
+                        text-decoration: none;
+                        display: inline-block;
+                        transition: all 0.2s ease;
+                    }
+
+                    .back-bubble:hover {
+                        background: rgba(0, 255, 100, 0.2);
+                        box-shadow: 0 0 15px rgba(0, 255, 100, 0.5);
+                    }
+
+                    /* Top-right status bar */
+                    .status-bar {
+                        position: absolute;
+                        top: 20px;
+                        right: 25px;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        z-index: 10;
+                    }
+
+                    .status-bubble {
+                        background: rgba(0, 20, 10, 0.6);
+                        backdrop-filter: blur(5px);
+                        padding: 12px 20px;
+                        border-radius: 30px;
+                        border: 1px solid rgba(0, 255, 100, 0.4);
+                        font-size: 1.1rem;
+                        font-weight: 700;
+                        color: #00ff66;
+                        letter-spacing: 0.5px;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,100,0.1);
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+
+                    /* Game Embed Container */
+                    .embed-container {
+                        flex: 1;
+                        width: 100%;
+                        border: none;
+                        background: #000;
+                    }
+
+                    iframe {
+                        width: 100%;
+                        height: 100%;
+                        border: none;
+                    }
+                </style>
+            </head>
+            <body>
+                <!-- Top-Left Back Button -->
+                <div class="top-left-bar">
+                    <a href="/i-ready/home" class="back-bubble">← Back</a>
+                </div>
+
+                <!-- Top-Right Status Bar -->
+                <div class="status-bar">
+                    <div class="status-bubble" id="live-clock">--:-- --</div>
+                    <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
+                    <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
+                </div>
+
+                <!-- Game Embed Frame -->
+                <div class="embed-container">
+                    <iframe src="${currentGame.url}" title="${currentGame.name}"></iframe>
+                </div>
+
+                <script>
+                    function updateClock() {
+                        const now = new Date();
+                        let hours = now.getHours();
+                        const minutes = now.getMinutes().toString().padStart(2, '0');
+                        const ampm = hours >= 12 ? 'PM' : 'AM';
+                        hours = hours % 12;
+                        hours = hours ? hours : 12; 
+                        document.getElementById('live-clock').innerText = hours + ':' + minutes + ' ' + ampm;
+                    }
+                    updateClock();
+                    setInterval(updateClock, 1000);
+
+                    function checkPing() {
+                        const startTime = performance.now();
+                        fetch('/i-ready/home', { method: 'HEAD', cache: 'no-store' })
+                            .then(() => {
+                                const duration = Math.round(performance.now() - startTime);
+                                const pingText = document.getElementById('ping-text');
+                                const pingIcon = document.getElementById('ping-icon');
+                                pingText.innerText = duration + ' ms';
+                                if (duration < 100) pingIcon.innerText = '🟢';
+                                else if (duration < 300) pingIcon.innerText = '🟡';
+                                else pingIcon.innerText = '🔴';
+                            })
+                            .catch(() => {
+                                document.getElementById('ping-text').innerText = 'Error';
+                                document.getElementById('ping-icon').innerText = '🔴';
+                            });
+                    }
+                    checkPing();
+                    setInterval(checkPing, 5000);
+
+                    if (navigator.getBattery) {
+                        navigator.getBattery().then(function(battery) {
+                            function updateBattery() {
+                                document.getElementById('battery-level').innerText = Math.round(battery.level * 100) + '%';
+                            }
+                            updateBattery();
+                            battery.addEventListener('levelchange', updateBattery);
+                        });
+                    }
+                </script>
+            </body>
+            </html>
+        `);
+    }
+
+    // Default Main Dashboard View
     res.send(`
         <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
             <title>i-Ready - Student Dashboard</title>
-            <link rel="icon" type="image/png" href="images/favicon.png">
-            <!-- Import a rounded, circley font from Google Fonts -->
+            <link rel="icon" type="image/png" href="/images/favicon.png">
             <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
             <style>
                 body { 
@@ -30,7 +202,6 @@ router.get('/home', (req, res) => {
                     overflow-x: hidden;
                 }
 
-                /* Futuristic glowing grid accent effect */
                 body::before {
                     content: "";
                     position: fixed;
@@ -47,7 +218,6 @@ router.get('/home', (req, res) => {
                     padding: 0 20px;
                 }
 
-                /* Cartoony Lime Image Styling */
                 .lime-image {
                     width: 120px;
                     height: 120px;
@@ -78,7 +248,6 @@ router.get('/home', (req, res) => {
                     margin-bottom: 30px;
                 }
 
-                /* Games Section Container */
                 .games-section {
                     margin-top: 40px;
                     text-align: left;
@@ -100,7 +269,6 @@ router.get('/home', (req, res) => {
                     gap: 20px;
                 }
 
-                /* Individual Game Card Bubble */
                 .game-card {
                     background: rgba(0, 20, 10, 0.6);
                     backdrop-filter: blur(5px);
@@ -141,7 +309,6 @@ router.get('/home', (req, res) => {
                     font-weight: 500;
                 }
 
-                /* Top-left corner logout button styled as a bubble */
                 .top-left-bar {
                     position: absolute;
                     top: 20px;
@@ -170,7 +337,6 @@ router.get('/home', (req, res) => {
                     box-shadow: 0 0 15px rgba(0, 255, 100, 0.5);
                 }
 
-                /* Top-right corner container for separate bubbles */
                 .status-bar {
                     position: absolute;
                     top: 20px;
@@ -181,7 +347,6 @@ router.get('/home', (req, res) => {
                     z-index: 10;
                 }
 
-                /* Individual larger bubble styling with green theme */
                 .status-bubble {
                     background: rgba(0, 20, 10, 0.6);
                     backdrop-filter: blur(5px);
@@ -200,12 +365,10 @@ router.get('/home', (req, res) => {
             </style>
         </head>
         <body>
-            <!-- Top-Left Corner Logout Bubble -->
             <div class="top-left-bar">
                 <a href="/" class="logout-bubble">Log out</a>
             </div>
 
-            <!-- Top-Right Corner Status Bar with Live Ping & Battery -->
             <div class="status-bar">
                 <div class="status-bubble" id="live-clock">--:-- --</div>
                 <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
@@ -213,31 +376,29 @@ router.get('/home', (req, res) => {
             </div>
 
             <div class="content-container">
-                <!-- Cartoony Lime Image -->
                 <img src="https://api.iconify.design/noto:lime.svg" alt="Cartoony Lime" class="lime-image">
                 <h1>LIME</h1>
                 <p>made by Rig</p>
 
-                <!-- Games Section -->
                 <div class="games-section">
                     <div class="games-title">🎮 AVAILABLE GAMES</div>
                     <div class="games-grid">
-                        <a href="#" class="game-card">
+                        <a href="/i-ready/home?game=ccbd-land" class="game-card">
                             <div class="game-icon">🟩</div>
                             <div class="game-name">CCBD LAND</div>
                             <div class="game-desc">Explore custom worlds & assets</div>
                         </a>
-                        <a href="#" class="game-card">
+                        <a href="/i-ready/home?game=adopt-pets" class="game-card">
                             <div class="game-icon">🐶</div>
                             <div class="game-name">Adopt Pets</div>
                             <div class="game-desc">Trade and collect rare companions</div>
                         </a>
-                        <a href="#" class="game-card">
+                        <a href="/i-ready/home?game=speed-run" class="game-card">
                             <div class="game-icon">⚡</div>
                             <div class="game-name">Speed Run X</div>
                             <div class="game-desc">Test your reflexes and parkour</div>
                         </a>
-                        <a href="#" class="game-card">
+                        <a href="/i-ready/home?game=neon-puzzle" class="game-card">
                             <div class="game-icon">🧩</div>
                             <div class="game-name">Neon Puzzle</div>
                             <div class="game-desc">Cyberpunk grid matching game</div>
@@ -247,7 +408,6 @@ router.get('/home', (req, res) => {
             </div>
 
             <script>
-                // Live ticking clock script
                 function updateClock() {
                     const now = new Date();
                     let hours = now.getHours();
@@ -260,7 +420,6 @@ router.get('/home', (req, res) => {
                 updateClock();
                 setInterval(updateClock, 1000);
 
-                // Live dynamic ping checker script
                 function checkPing() {
                     const startTime = performance.now();
                     fetch('/i-ready/home', { method: 'HEAD', cache: 'no-store' })
@@ -268,27 +427,19 @@ router.get('/home', (req, res) => {
                             const duration = Math.round(performance.now() - startTime);
                             const pingText = document.getElementById('ping-text');
                             const pingIcon = document.getElementById('ping-icon');
-                            
                             pingText.innerText = duration + ' ms';
-
-                            if (duration < 100) {
-                                pingIcon.innerText = '🟢';
-                            } else if (duration < 300) {
-                                pingIcon.innerText = '🟡';
-                            } else {
-                                pingIcon.innerText = '🔴';
-                            }
+                            if (duration < 100) pingIcon.innerText = '🟢';
+                            else if (duration < 300) pingIcon.innerText = '🟡';
+                            else pingIcon.innerText = '🔴';
                         })
                         .catch(() => {
                             document.getElementById('ping-text').innerText = 'Error';
                             document.getElementById('ping-icon').innerText = '🔴';
                         });
                 }
-                
                 checkPing();
                 setInterval(checkPing, 5000);
 
-                // Fetch real device battery if supported by browser
                 if (navigator.getBattery) {
                     navigator.getBattery().then(function(battery) {
                         function updateBattery() {
