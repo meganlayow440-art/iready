@@ -18,13 +18,13 @@ body {
     padding: 20px;
 }
 
-/* Login card wrapper */
+/* Login card must be 'position: relative' so the character aligns to it */
 .login-card {
     background: #ffffff;
     width: 580px;
     border-radius: 3px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.18);
-    position: relative;
+    position: relative; 
     z-index: 2;
 }
 
@@ -117,7 +117,6 @@ form {
     margin-top: 20px;
 }
 
-/* Go button styling */
 .go-btn-image {
     background: none;
     border: none;
@@ -138,17 +137,17 @@ form {
     pointer-events: auto;
 }
 
-/* FIXED: Character container locked to the exact right edge of the login card */
+/* FIXED: Sits right on the outer right edge of the white login card */
 .character-container {
     position: absolute;
-    right: -105px; /* Pulls it outside to the right edge of the card */
-    top: 140px;    /* Aligns it nicely vertically */
+    right: -135px; 
+    top: 130px;    
     z-index: 10;
     pointer-events: none;
 }
 
 .character-container img {
-    height: 210px;
+    height: 220px;
     width: auto;
 }
 
