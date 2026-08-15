@@ -10,6 +10,8 @@ router.get('/home', (req, res) => {
             <meta charset="UTF-8">
             <title>i-Ready - Student Dashboard</title>
             <link rel="icon" type="image/png" href="images/favicon.png">
+            <!-- Import a rounded, circley font from Google Fonts -->
+            <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
             <style>
                 body { 
                     background-color: #050f05; 
@@ -18,9 +20,9 @@ router.get('/home', (req, res) => {
                         linear-gradient(90deg, rgba(0, 255, 100, 0.05) 1px, transparent 1px);
                     background-size: 30px 30px;
                     color: #00ff66; 
-                    font-family: Arial, sans-serif; 
+                    font-family: 'Quicksand', sans-serif; 
                     text-align: center; 
-                    padding-top: 80px; 
+                    padding-top: 100px; 
                     margin: 0;
                     position: relative;
                     min-height: 100vh;
@@ -61,22 +63,41 @@ router.get('/home', (req, res) => {
                     color: #00ff66;
                     text-shadow: 0 0 15px rgba(0, 255, 100, 0.8), 0 0 30px rgba(0, 255, 100, 0.4); 
                     margin: 10px 0;
+                    font-weight: 700;
                 }
 
-                p { font-size: 1.2rem; color: #aaffcc; text-shadow: 0 0 5px rgba(0,255,100,0.3); }
-                
-                a { 
-                    color: #00ffcc; 
-                    text-decoration: none; 
-                    font-weight: bold; 
-                    border: 1px solid rgba(0,255,150,0.4);
-                    padding: 10px 25px;
-                    border-radius: 20px;
-                    background: rgba(0, 255, 100, 0.05);
+                p { 
+                    font-size: 1.3rem; 
+                    color: #aaffcc; 
+                    text-shadow: 0 0 5px rgba(0,255,100,0.3); 
+                    font-weight: 700;
+                }
+
+                /* Top-left corner logout button styled as a bubble */
+                .top-left-bar {
+                    position: absolute;
+                    top: 20px;
+                    left: 25px;
+                    z-index: 10;
+                }
+
+                .logout-bubble {
+                    background: rgba(0, 20, 10, 0.6);
+                    backdrop-filter: blur(5px);
+                    padding: 12px 22px;
+                    border-radius: 30px;
+                    border: 1px solid rgba(0, 255, 100, 0.4);
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                    color: #00ffcc;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,100,0.1);
+                    text-decoration: none;
+                    display: inline-block;
                     transition: all 0.2s ease;
                 }
 
-                a:hover {
+                .logout-bubble:hover {
                     background: rgba(0, 255, 100, 0.2);
                     box-shadow: 0 0 15px rgba(0, 255, 100, 0.5);
                 }
@@ -100,7 +121,7 @@ router.get('/home', (req, res) => {
                     border-radius: 30px;
                     border: 1px solid rgba(0, 255, 100, 0.4);
                     font-size: 1.1rem;
-                    font-weight: bold;
+                    font-weight: 700;
                     color: #00ff66;
                     letter-spacing: 0.5px;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,100,0.1);
@@ -111,7 +132,12 @@ router.get('/home', (req, res) => {
             </style>
         </head>
         <body>
-            <!-- Top Corner Status Bar with Live Ping & Battery -->
+            <!-- Top-Left Corner Logout Bubble -->
+            <div class="top-left-bar">
+                <a href="/" class="logout-bubble">Log out</a>
+            </div>
+
+            <!-- Top-Right Corner Status Bar with Live Ping & Battery -->
             <div class="status-bar">
                 <div class="status-bubble" id="live-clock">--:-- --</div>
                 <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
@@ -119,12 +145,10 @@ router.get('/home', (req, res) => {
             </div>
 
             <div class="content-container">
-                <!-- Cartoony Lime Image (Using a clean open-source vector illustration placeholder) -->
+                <!-- Cartoony Lime Image -->
                 <img src="https://api.iconify.design/noto:lime.svg" alt="Cartoony Lime" class="lime-image">
                 <h1>LIME</h1>
-                <p>System security bypassed. Welcome to the green futuristic zone.</p>
-                <br><br>
-                <a href="/">Log out</a>
+                <p>made by Rig</p>
             </div>
 
             <script>
