@@ -496,7 +496,7 @@
                         'Authorization': `Bearer ${GROQ_API_KEY}`
                     },
                     body: JSON.stringify({
-                        model: 'llama3-8b-8192', // Make sure this model string matches Groq's current available models
+                        model: 'openai/gpt-oss-120b', // Make sure this model string matches Groq's current available models
                         messages: [{ role: "user", content: text }]
                     })
                 });
