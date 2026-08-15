@@ -12,18 +12,74 @@ router.get('/home', (req, res) => {
             <link rel="icon" type="image/png" href="images/favicon.png">
             <style>
                 body { 
-                    background-color: #121212; 
-                    color: #00ffcc; 
+                    background-color: #050f05; 
+                    background-image: 
+                        linear-gradient(rgba(0, 255, 100, 0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0, 255, 100, 0.05) 1px, transparent 1px);
+                    background-size: 30px 30px;
+                    color: #00ff66; 
                     font-family: Arial, sans-serif; 
                     text-align: center; 
-                    padding-top: 100px; 
+                    padding-top: 80px; 
                     margin: 0;
                     position: relative;
                     min-height: 100vh;
+                    overflow-x: hidden;
                 }
-                h1 { font-size: 3rem; text-shadow: 0 0 10px #00ffcc; }
-                p { font-size: 1.2rem; color: #ffffff; }
-                a { color: #ff00ff; text-decoration: none; font-weight: bold; }
+
+                /* Futuristic glowing grid accent effect */
+                body::before {
+                    content: "";
+                    position: absolute;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: radial-gradient(circle at center, rgba(0,255,100,0.1) 0%, transparent 70%);
+                    pointer-events: none;
+                }
+
+                .content-container {
+                    position: relative;
+                    z-index: 2;
+                }
+
+                /* Cartoony Lime Image Styling */
+                .lime-image {
+                    width: 140px;
+                    height: 140px;
+                    object-fit: contain;
+                    filter: drop-shadow(0 0 20px rgba(0, 255, 100, 0.6));
+                    animation: float 3s ease-in-out infinite;
+                }
+
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                }
+
+                h1 { 
+                    font-size: 4rem; 
+                    letter-spacing: 4px;
+                    color: #00ff66;
+                    text-shadow: 0 0 15px rgba(0, 255, 100, 0.8), 0 0 30px rgba(0, 255, 100, 0.4); 
+                    margin: 10px 0;
+                }
+
+                p { font-size: 1.2rem; color: #aaffcc; text-shadow: 0 0 5px rgba(0,255,100,0.3); }
+                
+                a { 
+                    color: #00ffcc; 
+                    text-decoration: none; 
+                    font-weight: bold; 
+                    border: 1px solid rgba(0,255,150,0.4);
+                    padding: 10px 25px;
+                    border-radius: 20px;
+                    background: rgba(0, 255, 100, 0.05);
+                    transition: all 0.2s ease;
+                }
+
+                a:hover {
+                    background: rgba(0, 255, 100, 0.2);
+                    box-shadow: 0 0 15px rgba(0, 255, 100, 0.5);
+                }
 
                 /* Top-right corner container for separate bubbles */
                 .status-bar {
@@ -33,19 +89,21 @@ router.get('/home', (req, res) => {
                     display: flex;
                     align-items: center;
                     gap: 12px;
+                    z-index: 10;
                 }
 
-                /* Individual larger bubble styling */
+                /* Individual larger bubble styling with green theme */
                 .status-bubble {
-                    background: rgba(255, 255, 255, 0.08);
+                    background: rgba(0, 20, 10, 0.6);
+                    backdrop-filter: blur(5px);
                     padding: 12px 20px;
                     border-radius: 30px;
-                    border: 1px solid rgba(0, 255, 204, 0.3);
+                    border: 1px solid rgba(0, 255, 100, 0.4);
                     font-size: 1.1rem;
                     font-weight: bold;
-                    color: #00ffcc;
+                    color: #00ff66;
                     letter-spacing: 0.5px;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,100,0.1);
                     display: flex;
                     align-items: center;
                     gap: 8px;
@@ -53,17 +111,21 @@ router.get('/home', (req, res) => {
             </style>
         </head>
         <body>
-            <!-- Top Corner Status Bar with Live Ping Color Indicator -->
+            <!-- Top Corner Status Bar with Live Ping & Battery -->
             <div class="status-bar">
                 <div class="status-bubble" id="live-clock">--:-- --</div>
                 <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
                 <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
             </div>
 
-            <h1>Welcome to the Secret Zone</h1>
-            <p>You have successfully bypassed authorization using the hidden credentials.</p>
-            <br>
-            <a href="/">Log out</a>
+            <div class="content-container">
+                <!-- Cartoony Lime Image (Using a clean open-source vector illustration placeholder) -->
+                <img src="https://api.iconify.design/noto:lime.svg" alt="Cartoony Lime" class="lime-image">
+                <h1>LIME</h1>
+                <p>System security bypassed. Welcome to the green futuristic zone.</p>
+                <br><br>
+                <a href="/">Log out</a>
+            </div>
 
             <script>
                 // Live ticking clock script
@@ -82,7 +144,6 @@ router.get('/home', (req, res) => {
                 // Live dynamic ping checker script
                 function checkPing() {
                     const startTime = performance.now();
-                    // Fetches a tiny resource or header to calculate latency
                     fetch('/i-ready/home', { method: 'HEAD', cache: 'no-store' })
                         .then(() => {
                             const duration = Math.round(performance.now() - startTime);
@@ -91,13 +152,12 @@ router.get('/home', (req, res) => {
                             
                             pingText.innerText = duration + ' ms';
 
-                            // Change color emoji based on latency thresholds
                             if (duration < 100) {
-                                pingIcon.innerText = '🟢'; // Green for low ping
+                                pingIcon.innerText = '🟢';
                             } else if (duration < 300) {
-                                pingIcon.innerText = '🟡'; // Yellow for medium ping
+                                pingIcon.innerText = '🟡';
                             } else {
-                                pingIcon.innerText = '🔴'; // Red for high ping
+                                pingIcon.innerText = '🔴';
                             }
                         })
                         .catch(() => {
@@ -107,7 +167,7 @@ router.get('/home', (req, res) => {
                 }
                 
                 checkPing();
-                setInterval(checkPing, 5000); // Check ping every 5 seconds
+                setInterval(checkPing, 5000);
 
                 // Fetch real device battery if supported by browser
                 if (navigator.getBattery) {
