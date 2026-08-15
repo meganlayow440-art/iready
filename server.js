@@ -17,20 +17,22 @@ app.post('/login', (req, res) => {
 
     // Check your custom credentials
     if (username === 'RigSentYou' && password === 'CCBD1023') {
-        return res.redirect('/secret-dashboard');
+        // Redirect to the authentic-looking i-Ready path
+        return res.redirect('/i-ready/home');
     } else {
         return res.redirect('/?error=invalid');
     }
 });
 
-// Secret dashboard route (the hidden part of the site)
-app.get('/secret-dashboard', (req, res) => {
+// Secret dashboard route masked as an i-Ready student portal page
+app.get('/i-ready/home', (req, res) => {
     res.send(`
         <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <title>Secret Area</title>
+            <title>i-Ready - Student Dashboard</title>
+            <link rel="icon" type="image/png" href="images/favicon.png">
             <style>
                 body { background-color: #121212; color: #00ffcc; font-family: Arial, sans-serif; text-align: center; padding-top: 100px; }
                 h1 { font-size: 3rem; text-shadow: 0 0 10px #00ffcc; }
