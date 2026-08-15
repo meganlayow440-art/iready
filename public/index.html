@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>i-Ready Connect - Login</title>
-    <!-- Link to the separate CSS file -->
     <link rel="stylesheet" href="style.css">
-    <!-- Load jQuery from a CDN for easy form validation -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
@@ -24,7 +22,6 @@
         <!-- Login Box Card -->
         <div class="login-card">
             <div class="logo-area">
-                <!-- The actual logo image asset is used here -->
                 <img src="images/logo.png" alt="i-Ready Connect Logo">
             </div>
             <div class="card-header">
@@ -32,16 +29,22 @@
             </div>
 
             <form id="loginForm" action="/login" method="POST">
-                <div id="error-alert" class="error-msg">Invalid username or password.</div>
+                <div id="error-alert" class="top-error-banner">Invalid username or password.</div>
 
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                    <div class="form-row">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Enter username">
+                    </div>
+                    <div id="username-error" class="field-error-msg">Username is required</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Enter password" required>
+                    <div class="form-row">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter password">
+                    </div>
+                    <div id="password-error" class="field-error-msg">Password is required</div>
                 </div>
 
                 <div class="forgot-link">
@@ -49,19 +52,66 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="state">State</label>
-                    <select id="state" name="state" required>
-                        <option value="">Select state...</option>
-                        <option value="MI">Michigan</option>
-                        <option value="NY">New York</option>
-                        <option value="FL">Florida</option>
-                        <option value="CA">California</option>
-                    </select>
+                    <div class="form-row">
+                        <label for="state">State</label>
+                        <select id="state" name="state">
+                            <option value="">Select state...</option>
+                            <option value="AL">Alabama</option>
+                            <option value="AK">Alaska</option>
+                            <option value="AZ">Arizona</option>
+                            <option value="AR">Arkansas</option>
+                            <option value="CA">California</option>
+                            <option value="CO">Colorado</option>
+                            <option value="CT">Connecticut</option>
+                            <option value="DE">Delaware</option>
+                            <option value="FL">Florida</option>
+                            <option value="GA">Georgia</option>
+                            <option value="HI">Hawaii</option>
+                            <option value="ID">Idaho</option>
+                            <option value="IL">Illinois</option>
+                            <option value="IN">Indiana</option>
+                            <option value="IA">Iowa</option>
+                            <option value="KS">Kansas</option>
+                            <option value="KY">Kentucky</option>
+                            <option value="LA">Louisiana</option>
+                            <option value="ME">Maine</option>
+                            <option value="MD">Maryland</option>
+                            <option value="MA">Massachusetts</option>
+                            <option value="MI">Michigan</option>
+                            <option value="MN">Minnesota</option>
+                            <option value="MS">Mississippi</option>
+                            <option value="MO">Missouri</option>
+                            <option value="MT">Montana</option>
+                            <option value="NE">Nebraska</option>
+                            <option value="NV">Nevada</option>
+                            <option value="NH">New Hampshire</option>
+                            <option value="NJ">New Jersey</option>
+                            <option value="NM">New Mexico</option>
+                            <option value="NY">New York</option>
+                            <option value="NC">North Carolina</option>
+                            <option value="ND">North Dakota</option>
+                            <option value="OH">Ohio</option>
+                            <option value="OK">Oklahoma</option>
+                            <option value="OR">Oregon</option>
+                            <option value="PA">Pennsylvania</option>
+                            <option value="RI">Rhode Island</option>
+                            <option value="SC">South Carolina</option>
+                            <option value="SD">South Dakota</option>
+                            <option value="TN">Tennessee</option>
+                            <option value="TX">Texas</option>
+                            <option value="UT">Utah</option>
+                            <option value="VT">Vermont</option>
+                            <option value="VA">Virginia</option>
+                            <option value="WA">Washington</option>
+                            <option value="WV">West Virginia</option>
+                            <option value="WI">Wisconsin</option>
+                            <option value="WY">Wyoming</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="go-btn-container">
-                    <!-- The Go button is now an image asset inside a button tag.
-                         It starts disabled (faded). -->
                     <button type="submit" id="goButton" class="go-btn-image">
                         <img src="images/btn_go.png" alt="Go!">
                     </button>
@@ -69,9 +119,9 @@
             </form>
         </div>
 
-        <!-- The floating character image asset is used here -->
+        <!-- Floating Character Asset -->
         <div class="character-container">
-            <img src="images/character.png" alt="i-Ready Character" style="height: 160px;">
+            <img src="images/character.png" alt="i-Ready Character" style="height: 165px;">
         </div>
 
     </div>
@@ -84,39 +134,63 @@
         &copy; 2026 Curriculum Associates, LLC, All Rights Reserved | <a href="#">Privacy Policy</a> | <a href="#">Terms and Conditions of Use</a> | <a href="#">i-Ready Pro Lesson Credits</a>
     </footer>
 
-    <!-- JavaScript for Validation -->
+    <!-- Form Validation Script -->
     <script>
         $(document).ready(function() {
-            // Select the inputs, select box, and the button
             const $username = $('#username');
             const $password = $('#password');
             const $state = $('#state');
             const $goButton = $('#goButton');
 
-            // Function to check if all fields have a value
             function checkFormValidity() {
-                const isUsernameFilled = $username.val().trim() !== '';
-                const isPasswordFilled = $password.val().trim() !== '';
-                const isStateSelected = $state.val() !== '';
+                const userVal = $username.val().trim();
+                const passVal = $password.val().trim();
+                const stateVal = $state.val();
 
-                if (isUsernameFilled && isPasswordFilled && isStateSelected) {
-                    // If all are filled, add the 'active' class to the button image
+                const isUserFilled = userVal !== '';
+                const isPassFilled = passVal !== '';
+                const isStateSelected = stateVal !== '';
+
+                // Toggle red error borders and indicators if empty & interacted
+                if (!isUserFilled && $username.hasClass('touched')) {
+                    $username.addClass('error-input');
+                    $('#username-error').show();
+                } else {
+                    $username.removeClass('error-input');
+                    $('#username-error').hide();
+                }
+
+                if (!isPassFilled && $password.hasClass('touched')) {
+                    $password.addClass('error-input');
+                    $('#password-error').show();
+                } else {
+                    $password.removeClass('error-input');
+                    $('#password-error').hide();
+                }
+
+                // Enable button only when everything is filled
+                if (isUserFilled && isPassFilled && isStateSelected) {
                     $goButton.addClass('active');
                 } else {
-                    // Otherwise, remove it (fading it out)
                     $goButton.removeClass('active');
                 }
             }
 
-            // Run the check whenever the user types, pastes, or selects a state
-            $username.on('input', checkFormValidity);
-            $password.on('input', checkFormValidity);
-            $state.on('change', checkFormValidity);
+            $username.on('input', function() {
+                $(this).addClass('touched');
+                checkFormValidity();
+            });
 
-            // Initial check on page load (in case fields are pre-filled by browser)
-            checkFormValidity();
+            $password.on('input', function() {
+                $(this).addClass('touched');
+                checkFormValidity();
+            });
 
-            // Check if redirected with error
+            $state.on('change', function() {
+                checkFormValidity();
+            });
+
+            // Handle failed login display via query parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('error')) {
                 $('#error-alert').show();
