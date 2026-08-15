@@ -25,36 +25,39 @@ router.get('/home', (req, res) => {
                 p { font-size: 1.2rem; color: #ffffff; }
                 a { color: #ff00ff; text-decoration: none; font-weight: bold; }
 
-                /* Top-right corner status bar */
+                /* Top-right corner container for separate bubbles */
                 .status-bar {
                     position: absolute;
-                    top: 15px;
+                    top: 20px;
                     right: 25px;
                     display: flex;
                     align-items: center;
-                    gap: 15px;
-                    background: rgba(255, 255, 255, 0.05);
-                    padding: 8px 15px;
-                    border-radius: 20px;
-                    border: 1px solid rgba(0, 255, 204, 0.2);
-                    font-size: 0.9rem;
-                    color: #00ffcc;
-                    letter-spacing: 0.5px;
+                    gap: 12px;
                 }
 
-                .status-item {
+                /* Individual larger bubble styling */
+                .status-bubble {
+                    background: rgba(255, 255, 255, 0.08);
+                    padding: 12px 20px;
+                    border-radius: 30px;
+                    border: 1px solid rgba(0, 255, 204, 0.3);
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    color: #00ffcc;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
                     display: flex;
                     align-items: center;
-                    gap: 5px;
+                    gap: 8px;
                 }
             </style>
         </head>
         <body>
-            <!-- Top Corner Status Bar (Time, Battery, Wifi) -->
+            <!-- Top Corner Status Bar with Separate Larger Bubbles -->
             <div class="status-bar">
-                <div class="status-item" id="live-clock">--:-- --</div>
-                <div class="status-item">📶 5G</div>
-                <div class="status-item">⚡ <span id="battery-level">98%</span></div>
+                <div class="status-bubble" id="live-clock">--:-- --</div>
+                <div class="status-bubble">📶 5G</div>
+                <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
             </div>
 
             <h1>Welcome to the Secret Zone</h1>
@@ -70,13 +73,13 @@ router.get('/home', (req, res) => {
                     const minutes = now.getMinutes().toString().padStart(2, '0');
                     const ampm = hours >= 12 ? 'PM' : 'AM';
                     hours = hours % 12;
-                    hours = hours ? hours : 12; // the hour '0' should be '12'
+                    hours = hours ? hours : 12; 
                     document.getElementById('live-clock').innerText = hours + ':' + minutes + ' ' + ampm;
                 }
                 updateClock();
                 setInterval(updateClock, 1000);
 
-                // Optional: Automatically fetch real device battery if supported by browser
+                // Fetch real device battery if supported by browser
                 if (navigator.getBattery) {
                     navigator.getBattery().then(function(battery) {
                         function updateBattery() {
