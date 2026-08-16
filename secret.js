@@ -3,176 +3,6 @@ const router = express.Router();
 
 // Secret dashboard route masked as an i-Ready student portal page
 router.get('/home', (req, res) => {
-    const gameParam = req.query.game;
-
-    // If a game is selected, render the embedded game view keeping everything contained locally
-    if (gameParam) {
-        const gamesList = {
-            'thorns-and-balloons': { name: 'Thorns and Balloons', url: 'https://thornandballoons.com/game/index.html' }
-        };
-
-        const currentGame = gamesList[gameParam] || { name: 'Game', url: 'about:blank' };
-
-        return res.send(`
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>i-Ready - ${currentGame.name}</title>
-                <link rel="icon" type="image/png" href="/images/favicon.png">
-                <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-                <style>
-                    body { 
-                        background-color: #050f05; 
-                        margin: 0;
-                        padding-top: 80px;
-                        height: 100vh;
-                        box-sizing: border-box;
-                        font-family: 'Quicksand', sans-serif;
-                        overflow: hidden;
-                        display: flex;
-                        flex-direction: column;
-                    }
-
-                    .top-left-bar {
-                        position: absolute;
-                        top: 20px;
-                        left: 25px;
-                        z-index: 10;
-                    }
-
-                    .back-bubble {
-                        background: rgba(0, 20, 10, 0.6);
-                        backdrop-filter: blur(5px);
-                        padding: 12px 22px;
-                        border-radius: 30px;
-                        border: 1px solid rgba(0, 255, 100, 0.4);
-                        font-size: 1.1rem;
-                        font-weight: 700;
-                        color: #00ffcc;
-                        letter-spacing: 0.5px;
-                        box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,100,0.1);
-                        text-decoration: none;
-                        display: inline-block;
-                        transition: all 0.2s ease;
-                        cursor: pointer;
-                    }
-
-                    .back-bubble:hover {
-                        background: rgba(0, 255, 100, 0.2);
-                        box-shadow: 0 0 15px rgba(0, 255, 100, 0.5);
-                    }
-
-                    .status-bar {
-                        position: absolute;
-                        top: 20px;
-                        right: 25px;
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        z-index: 10;
-                    }
-
-                    .status-bubble {
-                        background: rgba(0, 20, 10, 0.6);
-                        backdrop-filter: blur(5px);
-                        padding: 12px 20px;
-                        border-radius: 30px;
-                        border: 1px solid rgba(0, 255, 100, 0.4);
-                        font-size: 1.1rem;
-                        font-weight: 700;
-                        color: #00ff66;
-                        letter-spacing: 0.5px;
-                        box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,100,0.1);
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                    }
-
-                    .embed-container {
-                        flex: 1;
-                        width: 100%;
-                        border: none;
-                        background: #000;
-                    }
-
-                    iframe {
-                        width: 100%;
-                        height: 100%;
-                        border: none;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="top-left-bar">
-                    <a onclick="goBack()" class="back-bubble">← Back</a>
-                </div>
-
-                <div class="status-bar">
-                    <div class="status-bubble" id="live-clock">--:-- --</div>
-                    <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
-                    <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
-                </div>
-
-                <div class="embed-container">
-                    <iframe src="${currentGame.url}" title="${currentGame.name}"></iframe>
-                </div>
-
-                <script>
-                    // Keeps it seamlessly inside the dashboard view wrapper without navigating away
-                    function goBack() {
-                        history.pushState({}, '', '/i-ready/home');
-                        window.location.reload();
-                    }
-
-                    function updateClock() {
-                        const now = new Date();
-                        let hours = now.getHours();
-                        const minutes = now.getMinutes().toString().padStart(2, '0');
-                        const ampm = hours >= 12 ? 'PM' : 'AM';
-                        hours = hours % 12;
-                        hours = hours ? hours : 12; 
-                        document.getElementById('live-clock').innerText = hours + ':' + minutes + ' ' + ampm;
-                    }
-                    updateClock();
-                    setInterval(updateClock, 1000);
-
-                    function checkPing() {
-                        const startTime = performance.now();
-                        fetch('/i-ready/home', { method: 'HEAD', cache: 'no-store' })
-                            .then(() => {
-                                const duration = Math.round(performance.now() - startTime);
-                                const pingText = document.getElementById('ping-text');
-                                const pingIcon = document.getElementById('ping-icon');
-                                pingText.innerText = duration + ' ms';
-                                if (duration < 100) pingIcon.innerText = '🟢';
-                                else if (duration < 300) pingIcon.innerText = '🟡';
-                                else pingIcon.innerText = '🔴';
-                            })
-                            .catch(() => {
-                                document.getElementById('ping-text').innerText = 'Error';
-                                document.getElementById('ping-icon').innerText = '🔴';
-                            });
-                    }
-                    checkPing();
-                    setInterval(checkPing, 5000);
-
-                    if (navigator.getBattery) {
-                        navigator.getBattery().then(function(battery) {
-                            function updateBattery() {
-                                document.getElementById('battery-level').innerText = Math.round(battery.level * 100) + '%';
-                            }
-                            updateBattery();
-                            battery.addEventListener('levelchange', updateBattery);
-                        });
-                    }
-                </script>
-            </body>
-            </html>
-        `);
-    }
-
-    // Default Main Dashboard View using Single-Page State Transitions
     res.send(`
         <!DOCTYPE html>
         <html lang="en">
@@ -191,8 +21,6 @@ router.get('/home', (req, res) => {
                     color: #00ff66; 
                     font-family: 'Quicksand', sans-serif; 
                     text-align: center; 
-                    padding-top: 80px; 
-                    padding-bottom: 50px;
                     margin: 0;
                     position: relative;
                     min-height: 100vh;
@@ -205,6 +33,25 @@ router.get('/home', (req, res) => {
                     top: 0; left: 0; right: 0; bottom: 0;
                     background: radial-gradient(circle at center, rgba(0,255,100,0.1) 0%, transparent 70%);
                     pointer-events: none;
+                }
+
+                /* Main Dashboard View Container */
+                #main-view {
+                    padding-top: 80px; 
+                    padding-bottom: 50px;
+                    display: block;
+                }
+
+                /* In-Page Game View Container */
+                #game-view {
+                    display: none;
+                    position: fixed;
+                    top: 0; left: 0; width: 100vw; height: 100vh;
+                    background: #050f05;
+                    box-sizing: border-box;
+                    padding-top: 80px;
+                    flex-direction: column;
+                    z-index: 5;
                 }
 
                 .content-container {
@@ -314,7 +161,7 @@ router.get('/home', (req, res) => {
                     z-index: 10;
                 }
 
-                .logout-bubble {
+                .logout-bubble, .back-bubble {
                     background: rgba(0, 20, 10, 0.6);
                     backdrop-filter: blur(5px);
                     padding: 12px 22px;
@@ -328,9 +175,10 @@ router.get('/home', (req, res) => {
                     text-decoration: none;
                     display: inline-block;
                     transition: all 0.2s ease;
+                    cursor: pointer;
                 }
 
-                .logout-bubble:hover {
+                .logout-bubble:hover, .back-bubble:hover {
                     background: rgba(0, 255, 100, 0.2);
                     box-shadow: 0 0 15px rgba(0, 255, 100, 0.5);
                 }
@@ -360,41 +208,76 @@ router.get('/home', (req, res) => {
                     align-items: center;
                     gap: 8px;
                 }
+
+                .embed-container {
+                    flex: 1;
+                    width: 100%;
+                    border: none;
+                    background: #000;
+                }
+
+                iframe {
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                }
             </style>
         </head>
         <body>
-            <div class="top-left-bar">
-                <a href="/" class="logout-bubble">Log out</a>
-            </div>
-
+            <!-- Top Status Bar (Persistent) -->
             <div class="status-bar">
                 <div class="status-bubble" id="live-clock">--:-- --</div>
                 <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
                 <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
             </div>
 
-            <div class="content-container">
-                <img src="https://api.iconify.design/noto:lime.svg" alt="Cartoony Lime" class="lime-image">
-                <h1>LIME</h1>
-                <p>made by Rig</p>
+            <!-- MAIN DASHBOARD VIEW -->
+            <div id="main-view">
+                <div class="top-left-bar">
+                    <a href="/" class="logout-bubble">Log out</a>
+                </div>
 
-                <div class="games-section">
-                    <div class="games-title">🎮 AVAILABLE GAMES</div>
-                    <div class="games-grid">
-                        <div onclick="openGame('thorns-and-balloons')" class="game-card">
-                            <div class="game-icon">🎈</div>
-                            <div class="game-name">Thorns and Balloons</div>
-                            <div class="game-desc">Pop balloons with sharp thorns</div>
+                <div class="content-container">
+                    <img src="https://api.iconify.design/noto:lime.svg" alt="Cartoony Lime" class="lime-image">
+                    <h1>LIME</h1>
+                    <p>made by Rig</p>
+
+                    <div class="games-section">
+                        <div class="games-title">🎮 AVAILABLE GAMES</div>
+                        <div class="games-grid">
+                            <div onclick="openGame()" class="game-card">
+                                <div class="game-icon">🎈</div>
+                                <div class="game-name">Thorns and Balloons</div>
+                                <div class="game-desc">Pop balloons with sharp thorns</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- EMBEDDED GAME VIEW (Keeps URL completely unchanged) -->
+            <div id="game-view">
+                <div class="top-left-bar">
+                    <div onclick="closeGame()" class="back-bubble">← Back</div>
+                </div>
+
+                <div class="embed-container">
+                    <iframe id="game-iframe" title="Thorns and Balloons"></iframe>
+                </div>
+            </div>
+
             <script>
-                // Seamlessly swaps views dynamically without triggering external browser URL redirects
-                function openGame(gameId) {
-                    history.pushState({}, '', '/i-ready/home?game=' + gameId);
-                    window.location.reload();
+                // Instantly switches views locally in the DOM without altering the URL whatsoever
+                function openGame() {
+                    document.getElementById('game-iframe').src = 'https://thornandballoons.com/game/index.html';
+                    document.getElementById('main-view').style.display = 'none';
+                    document.getElementById('game-view').style.display = 'flex';
+                }
+
+                function closeGame() {
+                    document.getElementById('game-iframe').src = '';
+                    document.getElementById('game-view').style.display = 'none';
+                    document.getElementById('main-view').style.display = 'block';
                 }
 
                 function updateClock() {
