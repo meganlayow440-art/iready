@@ -36,15 +36,16 @@ app.post('/api/auth', async (req, res) => {
     }
 
     try {
-        // Query user by username
-        const { data: existingUser, error: fetchError } = await supabase
+        const cleanUser = username.toLowerCase().trim();
+
+        // Check if username exists
+        const { data: existingUser } = await supabase
             .from('users')
             .select('*')
-            .eq('username', username.toLowerCase())
-            .single();
+            .eq('username', cleanUser)
+            .maybeSingle();
 
         if (existingUser) {
-            // User exists -> check password match
             if (existingUser.password === password) {
                 return res.json({ success: true, isNew: false, username: existingUser.username });
             } else {
@@ -52,7 +53,7 @@ app.post('/api/auth', async (req, res) => {
             }
         }
 
-        // Check if password is already taken by another account
+        // Check password usage
         const { data: passCheck } = await supabase
             .from('users')
             .select('id')
@@ -62,18 +63,17 @@ app.post('/api/auth', async (req, res) => {
             return res.status(400).json({ success: false, message: 'That password is already in use by another user' });
         }
 
-        // Create new account
-        const { data: newUser, error: insertError } = await supabase
+        // Insert new account
+        const { error: insertError } = await supabase
             .from('users')
-            .insert([{ username: username.toLowerCase(), password }])
-            .select()
-            .single();
+            .insert([{ username: cleanUser, password }]);
 
         if (insertError) {
-            return res.status(500).json({ success: false, message: 'Database error creating account' });
+            console.error('Supabase Insert Error:', insertError);
+            return res.status(500).json({ success: false, message: 'Database error: ' + insertError.message });
         }
 
-        return res.json({ success: true, isNew: true, username: newUser.username });
+        return res.json({ success: true, isNew: true, username: cleanUser });
 
     } catch (err) {
         return res.status(500).json({ success: false, message: 'Server error processing request' });
