@@ -80,6 +80,64 @@ app.post('/api/auth', async (req, res) => {
     }
 });
 
+// --- Profile Update Route ---
+app.post('/api/profile/update', async (req, res) => {
+    const { username, bio, avatar_url } = req.body;
+    if (!username) return res.status(400).json({ success: false, message: 'Username required' });
+
+    const { data, error } = await supabase
+        .from('profiles')
+        .upsert({ username: username.toLowerCase(), bio, avatar_url }, { onConflict: 'username' });
+
+    if (error) return res.status(500).json({ success: false, message: error.message });
+    return res.json({ success: true, message: 'Profile updated!' });
+});
+
+// --- Fetch User Profile Route ---
+app.get('/api/profile/:username', async (req, res) => {
+    const { username } = req.params;
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username.toLowerCase())
+        .maybeSingle();
+
+    if (error || !data) return res.status(404).json({ success: false, message: 'User not found' });
+    return res.json({ success: true, profile: data });
+});
+
+// --- Add Friend Route ---
+app.post('/api/friends/add', async (req, res) => {
+    const { username, friendUsername } = req.body;
+    if (!username || !friendUsername) return res.status(400).json({ success: false, message: 'Both usernames required' });
+
+    const userA = username.toLowerCase();
+    const userB = friendUsername.toLowerCase();
+
+    if (userA === userB) return res.status(400).json({ success: false, message: 'Cannot add yourself' });
+
+    const { error } = await supabase
+        .from('friends')
+        .insert([{ user_a: userA, user_b: userB, status: 'accepted' }]);
+
+    if (error) return res.status(400).json({ success: false, message: 'Already friends or invalid request' });
+    return res.json({ success: true, message: `Added ${friendUsername} as friend!` });
+});
+
+// --- List Friends Route ---
+app.get('/api/friends/:username', async (req, res) => {
+    const user = req.params.username.toLowerCase();
+    const { data, error } = await supabase
+        .from('friends')
+        .select('*')
+        .or(`user_a.eq.${user},user_b.eq.${user}`);
+
+    if (error) return res.status(500).json({ success: false, message: error.message });
+
+    const friendsList = data.map(f => f.user_a === user ? f.user_b : f.user_a);
+    return res.json({ success: true, friends: friendsList });
+});
+
 app.use('/i-ready', secretRouter);
 
 app.use((req, res) => {
