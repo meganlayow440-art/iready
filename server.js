@@ -141,9 +141,3 @@ app.get('/api/friends/:username', async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-    const { error } = await supabase
-        .from('friends')
-        .insert([{ user_a: userA, user_b: userB, status: 'accepted' }]);
-
-    if (error) return res.status(400).json({ success: false, message: 'Already friends
