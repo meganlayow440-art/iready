@@ -10,6 +10,7 @@ router.get('/home', (req, res) => {
             <title>i-Ready - Student Dashboard</title>
             <link rel="icon" type="image/png" href="/images/favicon.png">
             <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+            <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
             <style>
                 body { 
                     background-color: #050f05; 
@@ -235,7 +236,7 @@ router.get('/home', (req, res) => {
                 .custom-url-input {
                     width: 85%;
                     padding: 8px 10px;
-                    margin-top: 10px;
+                    margin-top: 6px;
                     background: #050f05;
                     border: 1px solid rgba(0, 255, 100, 0.4);
                     border-radius: 8px;
@@ -362,6 +363,13 @@ router.get('/home', (req, res) => {
                 <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
             </div>
 
+            <!-- Voice Call Bar -->
+            <div id="call-bar" style="display:none; position:fixed; bottom:20px; right:20px; background:#002010; border:1px solid #00ff66; padding:15px; border-radius:15px; z-index:200;">
+                <span id="call-status">🎙️ In Voice Call with <b id="call-target">--</b></span>
+                <button onclick="endVoiceCall()" style="background:#ff4444; border:none; color:white; padding:5px 12px; border-radius:8px; margin-left:10px; cursor:pointer;">Hang Up</button>
+            </div>
+            <audio id="remote-audio" autoplay></audio>
+
             <div id="main-view">
                 <div class="top-left-bar">
                     <a href="/" class="logout-bubble">Log out</a>
@@ -396,7 +404,7 @@ router.get('/home', (req, res) => {
                                 <div class="game-name">DistroSea</div>
                                 <div class="game-desc">VM Service meant for testing distros</div>
                             </div>
-                                  <div onclick="openGame('https://j.xj2.workers.dev/')" class="game-card">
+                            <div onclick="openGame('https://j.xj2.workers.dev/')" class="game-card">
                                 <div class="game-icon">🏝️</div>
                                 <div class="game-name">Page Sandbox</div>
                                 <div class="game-desc">Allows you to go on any site</div>
@@ -412,6 +420,36 @@ router.get('/home', (req, res) => {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Profile & Social Hub -->
+                    <div class="games-section" style="margin-top: 40px;">
+                        <div class="games-title">💬 COMMUNITY & VOICE HUB</div>
+                        <div class="games-grid">
+                            
+                            <!-- Profile Card -->
+                            <div class="game-card" style="width: 260px; text-align: left;" onclick="event.stopPropagation()">
+                                <div class="game-name" style="text-align:center;">👤 Profile</div>
+                                <img id="my-avatar-preview" src="https://api.iconify.design/noto:lime.svg" style="width:50px; height:50px; display:block; margin:8px auto; border-radius:50%;">
+                                <label style="font-size:0.8rem; color:#88cc99;">Bio:</label>
+                                <input type="text" id="edit-bio" class="custom-url-input" placeholder="Your custom bio...">
+                                <label style="font-size:0.8rem; color:#88cc99; margin-top:5px; display:block;">Avatar URL:</label>
+                                <input type="text" id="edit-avatar" class="custom-url-input" placeholder="https://image-link.png">
+                                <button class="modal-btn" style="width:100%; font-size:0.85rem; padding:6px; margin-top:10px;" onclick="saveProfile()">Save Profile</button>
+                            </div>
+
+                            <!-- Friends & Calls Card -->
+                            <div class="game-card" style="width: 260px; text-align: left;" onclick="event.stopPropagation()">
+                                <div class="game-name" style="text-align:center;">👥 Friends</div>
+                                <input type="text" id="friend-username-input" class="custom-url-input" placeholder="Friend username...">
+                                <button class="modal-btn" style="width:100%; font-size:0.85rem; padding:6px; margin-top:8px;" onclick="addFriend()">Add Friend</button>
+                                <div id="friends-list" style="margin-top:15px; max-height:120px; overflow-y:auto; font-size:0.85rem;">
+                                    <p style="color:#88cc99; text-align:center;">Loading friends...</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -426,6 +464,10 @@ router.get('/home', (req, res) => {
             </div>
 
             <script>
+                let peer = null;
+                let currentCall = null;
+                let localAudioStream = null;
+
                 function nextStep(step) {
                     document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
                     document.getElementById('step-' + step).classList.add('active');
@@ -456,6 +498,9 @@ router.get('/home', (req, res) => {
                         if (data.success) {
                             localStorage.setItem('limely_username', data.username);
                             document.getElementById('user-display').innerText = '👤 ' + data.username;
+                            initVoiceCalls(data.username);
+                            loadFriends();
+                            loadProfile(data.username);
                             nextStep(4);
                         } else {
                             errorDiv.innerText = data.message || 'Authentication failed';
@@ -480,14 +525,6 @@ router.get('/home', (req, res) => {
                     document.getElementById('onboarding-overlay').style.display = 'none';
                 }
 
-                window.addEventListener('DOMContentLoaded', () => {
-                    const savedUser = localStorage.getItem('limely_username');
-                    if (savedUser) {
-                        document.getElementById('user-display').innerText = '👤 ' + savedUser;
-                        document.getElementById('onboarding-overlay').style.display = 'none';
-                    }
-                });
-
                 function openGame(url) {
                     document.getElementById('game-iframe').src = url;
                     document.getElementById('main-view').style.display = 'none';
@@ -510,6 +547,127 @@ router.get('/home', (req, res) => {
                     document.getElementById('game-view').style.display = 'none';
                     document.getElementById('main-view').style.display = 'block';
                 }
+
+                // --- Voice Calls & PeerJS ---
+                function initVoiceCalls(username) {
+                    peer = new Peer('limely-' + username.toLowerCase());
+
+                    peer.on('call', (call) => {
+                        const callerName = call.peer.replace('limely-', '');
+                        const accept = confirm('Incoming call from ' + callerName + '! Answer?');
+                        if (accept) {
+                            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                                .then((stream) => {
+                                    localAudioStream = stream;
+                                    call.answer(stream);
+                                    setupCallStream(call, callerName);
+                                })
+                                .catch(() => alert('Microphone access required to answer voice calls.'));
+                        }
+                    });
+                }
+
+                function callFriend(friendUser) {
+                    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                        .then((stream) => {
+                            localAudioStream = stream;
+                            const peerId = 'limely-' + friendUser.toLowerCase();
+                            const call = peer.call(peerId, stream);
+                            setupCallStream(call, friendUser);
+                        })
+                        .catch(() => alert('Microphone access required to make voice calls!'));
+                }
+
+                function setupCallStream(call, friendUser) {
+                    currentCall = call;
+                    document.getElementById('call-bar').style.display = 'block';
+                    document.getElementById('call-target').innerText = friendUser;
+
+                    call.on('stream', (remoteStream) => {
+                        document.getElementById('remote-audio').srcObject = remoteStream;
+                    });
+
+                    call.on('close', () => endVoiceCall());
+                }
+
+                function endVoiceCall() {
+                    if (currentCall) currentCall.close();
+                    if (localAudioStream) localAudioStream.getTracks().forEach(track => track.stop());
+                    document.getElementById('call-bar').style.display = 'none';
+                }
+
+                // --- Profiles & Friends Logic ---
+                async function saveProfile() {
+                    const username = localStorage.getItem('limely_username');
+                    const bio = document.getElementById('edit-bio').value;
+                    const avatar_url = document.getElementById('edit-avatar').value;
+
+                    const res = await fetch('/api/profile/update', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, bio, avatar_url })
+                    });
+                    const data = await res.json();
+                    alert(data.message);
+                    if (avatar_url) document.getElementById('my-avatar-preview').src = avatar_url;
+                }
+
+                async function loadProfile(username) {
+                    const res = await fetch('/api/profile/' + username);
+                    const data = await res.json();
+                    if (data.success && data.profile) {
+                        if (data.profile.bio) document.getElementById('edit-bio').value = data.profile.bio;
+                        if (data.profile.avatar_url) {
+                            document.getElementById('edit-avatar').value = data.profile.avatar_url;
+                            document.getElementById('my-avatar-preview').src = data.profile.avatar_url;
+                        }
+                    }
+                }
+
+                async function loadFriends() {
+                    const username = localStorage.getItem('limely_username');
+                    if (!username) return;
+
+                    const res = await fetch('/api/friends/' + username);
+                    const data = await res.json();
+                    const listDiv = document.getElementById('friends-list');
+
+                    if (data.success && data.friends.length > 0) {
+                        listDiv.innerHTML = data.friends.map(f => `
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <span>👤 ${f}</span>
+                                <button class="modal-btn" style="padding:2px 8px; font-size:0.75rem; margin:0;" onclick="callFriend('${f}')">📞 Call</button>
+                            </div>
+                        `).join('');
+                    } else {
+                        listDiv.innerHTML = '<p style="color:#88cc99; text-align:center;">No friends added yet.</p>';
+                    }
+                }
+
+                async function addFriend() {
+                    const username = localStorage.getItem('limely_username');
+                    const friendUsername = document.getElementById('friend-username-input').value.trim();
+
+                    const res = await fetch('/api/friends/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, friendUsername })
+                    });
+                    const data = await res.json();
+                    alert(data.message);
+                    if (data.success) loadFriends();
+                }
+
+                window.addEventListener('DOMContentLoaded', () => {
+                    const savedUser = localStorage.getItem('limely_username');
+                    if (savedUser) {
+                        document.getElementById('user-display').innerText = '👤 ' + savedUser;
+                        document.getElementById('onboarding-overlay').style.display = 'none';
+                        initVoiceCalls(savedUser);
+                        loadFriends();
+                        loadProfile(savedUser);
+                    }
+                });
 
                 function updateClock() {
                     const now = new Date();
