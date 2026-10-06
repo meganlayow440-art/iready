@@ -77,19 +77,6 @@ router.get('/home', (req, res) => {
                     outline: none;
                 }
 
-                .modal-select {
-                    width: 85%;
-                    padding: 12px;
-                    margin: 15px 0;
-                    background: #050f05;
-                    border: 1px solid rgba(0, 255, 100, 0.4);
-                    border-radius: 10px;
-                    color: #00ff66;
-                    font-family: 'Quicksand', sans-serif;
-                    font-size: 1rem;
-                    outline: none;
-                }
-
                 .modal-btn {
                     background: rgba(0, 255, 100, 0.2);
                     border: 1px solid #00ff66;
@@ -328,18 +315,6 @@ router.get('/home', (req, res) => {
                     </div>
 
                     <div id="step-2" class="modal-step">
-                        <h3>Select School Extension</h3>
-                        <p style="font-size: 0.9rem; margin-bottom: 10px;">Select your primary extension:</p>
-                        <select id="ext-select" class="modal-select">
-                            <option value="linewize">Linewize</option>
-                            <option value="securly">Securly</option>
-                            <option value="other">Other</option>
-                        </select>
-                        <br>
-                        <button class="modal-btn" onclick="nextStep(3)">Next</button>
-                    </div>
-
-                    <div id="step-3" class="modal-step">
                         <h3>Account Credentials</h3>
                         <input type="text" id="username-input" class="modal-input" placeholder="Username...">
                         <input type="password" id="password-input" class="modal-input" placeholder="Password...">
@@ -348,7 +323,7 @@ router.get('/home', (req, res) => {
                         <button class="modal-btn" onclick="handleAuth()">Submit</button>
                     </div>
 
-                    <div id="step-4" class="modal-step">
+                    <div id="step-3" class="modal-step">
                         <h2 id="final-title">You're all set.</h2>
                         <p>Welcome to Limely.</p>
                         <button class="modal-btn" onclick="closeOnboarding()">Enter Site</button>
@@ -468,10 +443,12 @@ router.get('/home', (req, res) => {
                 let currentCall = null;
                 let localAudioStream = null;
 
-                function nextStep(step) {
-                    const steps = document.querySelectorAll('.modal-step');
-                    steps.forEach(s => s.classList.remove('active'));
-                    const target = document.getElementById('step-' + step);
+                function nextStep(stepNum) {
+                    var allSteps = document.querySelectorAll('.modal-step');
+                    for (var i = 0; i < allSteps.length; i++) {
+                        allSteps[i].classList.remove('active');
+                    }
+                    var target = document.getElementById('step-' + stepNum);
                     if (target) {
                         target.classList.add('active');
                     }
@@ -505,7 +482,7 @@ router.get('/home', (req, res) => {
                             initVoiceCalls(data.username);
                             loadFriends();
                             loadProfile(data.username);
-                            nextStep(4);
+                            nextStep(3);
                         } else {
                             errorDiv.innerText = data.message || 'Authentication failed';
                             errorDiv.style.display = 'block';
@@ -522,7 +499,7 @@ router.get('/home', (req, res) => {
                     document.getElementById('password-input').value = '';
                     document.getElementById('auth-error').style.display = 'none';
                     document.getElementById('onboarding-overlay').style.display = 'flex';
-                    nextStep(3);
+                    nextStep(2);
                 }
 
                 function closeOnboarding() {
