@@ -134,5 +134,8 @@ app.get('/api/friends/:username', async (req, res) => {
     const friendsList = data.map(f => f.user_a === user ? f.user_b : f.user_a);
     return res.json({ success: true, friends: friendsList });
 });
-
+// Add this right above app.listen() in server.js
+app.get('/', (req, res) => {
+    res.redirect('/i-ready/home');
+});
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
