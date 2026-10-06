@@ -55,14 +55,6 @@ router.get('/home', (req, res) => {
                     box-shadow: 0 0 30px rgba(0, 255, 100, 0.3);
                 }
 
-                .modal-step {
-                    display: none;
-                }
-
-                .modal-step.active {
-                    display: block;
-                }
-
                 .modal-input {
                     width: 80%;
                     padding: 12px;
@@ -306,28 +298,15 @@ router.get('/home', (req, res) => {
             </style>
         </head>
         <body>
+            <!-- Direct Login Overlay -->
             <div id="onboarding-overlay">
                 <div class="modal-card">
-                    <div id="step-1" class="modal-step active">
-                        <h2>Welcome to Limely.</h2>
-                        <p>Let's get you started.</p>
-                        <button class="modal-btn" onclick="nextStep(2)">Next</button>
-                    </div>
-
-                    <div id="step-2" class="modal-step">
-                        <h3>Account Credentials</h3>
-                        <input type="text" id="username-input" class="modal-input" placeholder="Username...">
-                        <input type="password" id="password-input" class="modal-input" placeholder="Password...">
-                        <div id="auth-error" class="error-msg"></div>
-                        <br>
-                        <button class="modal-btn" onclick="handleAuth()">Submit</button>
-                    </div>
-
-                    <div id="step-3" class="modal-step">
-                        <h2 id="final-title">You're all set.</h2>
-                        <p>Welcome to Limely.</p>
-                        <button class="modal-btn" onclick="closeOnboarding()">Enter Site</button>
-                    </div>
+                    <h3>Account Credentials</h3>
+                    <input type="text" id="username-input" class="modal-input" placeholder="Username...">
+                    <input type="password" id="password-input" class="modal-input" placeholder="Password...">
+                    <div id="auth-error" class="error-msg"></div>
+                    <br>
+                    <button class="modal-btn" onclick="handleAuth()">Submit</button>
                 </div>
             </div>
 
@@ -443,17 +422,6 @@ router.get('/home', (req, res) => {
                 let currentCall = null;
                 let localAudioStream = null;
 
-                function nextStep(stepNum) {
-                    var allSteps = document.querySelectorAll('.modal-step');
-                    for (var i = 0; i < allSteps.length; i++) {
-                        allSteps[i].classList.remove('active');
-                    }
-                    var target = document.getElementById('step-' + stepNum);
-                    if (target) {
-                        target.classList.add('active');
-                    }
-                }
-
                 async function handleAuth() {
                     const username = document.getElementById('username-input').value.trim();
                     const password = document.getElementById('password-input').value.trim();
@@ -482,7 +450,7 @@ router.get('/home', (req, res) => {
                             initVoiceCalls(data.username);
                             loadFriends();
                             loadProfile(data.username);
-                            nextStep(3);
+                            closeOnboarding();
                         } else {
                             errorDiv.innerText = data.message || 'Authentication failed';
                             errorDiv.style.display = 'block';
@@ -499,7 +467,6 @@ router.get('/home', (req, res) => {
                     document.getElementById('password-input').value = '';
                     document.getElementById('auth-error').style.display = 'none';
                     document.getElementById('onboarding-overlay').style.display = 'flex';
-                    nextStep(2);
                 }
 
                 function closeOnboarding() {
