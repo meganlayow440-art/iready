@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Login portal check
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    if (username === 'RigSentYou' && password === 'CCBD1023') {
+    if (username === 'RigSentYou' && password === '1111') {
         return res.redirect('/i-ready/home');
     } else {
         return res.redirect('/?error=invalid');
