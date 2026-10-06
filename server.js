@@ -19,135 +19,9 @@ const secretRouter = require('./secret');
 // Mount secret route router
 app.use('/i-ready', secretRouter);
 
-// Root Route - Serve Login Page
+// Root Route - Redirect directly to secret.js view
 app.get('/', (req, res) => {
-    res.send(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>i-Ready - Student Login</title>
-            <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-            <style>
-                body {
-                    background-color: #050f05;
-                    background-image: 
-                        linear-gradient(rgba(0, 255, 100, 0.05) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0, 255, 100, 0.05) 1px, transparent 1px);
-                    background-size: 30px 30px;
-                    color: #00ff66;
-                    font-family: 'Quicksand', sans-serif;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                    margin: 0;
-                }
-                .login-card {
-                    background: rgba(0, 20, 10, 0.85);
-                    border: 1px solid #00ff66;
-                    border-radius: 20px;
-                    padding: 35px;
-                    width: 380px;
-                    text-align: center;
-                    box-shadow: 0 0 30px rgba(0, 255, 100, 0.3);
-                }
-                h1 {
-                    color: #00ff66;
-                    font-size: 2.5rem;
-                    margin-bottom: 5px;
-                    text-shadow: 0 0 10px rgba(0, 255, 100, 0.5);
-                }
-                p {
-                    color: #aaffcc;
-                    font-size: 0.95rem;
-                    margin-bottom: 25px;
-                }
-                .input-field {
-                    width: 85%;
-                    padding: 12px;
-                    margin: 10px 0;
-                    background: #050f05;
-                    border: 1px solid rgba(0, 255, 100, 0.4);
-                    border-radius: 10px;
-                    color: #00ff66;
-                    font-family: 'Quicksand', sans-serif;
-                    font-size: 1rem;
-                    text-align: center;
-                    outline: none;
-                }
-                .btn {
-                    background: rgba(0, 255, 100, 0.2);
-                    border: 1px solid #00ff66;
-                    color: #00ffcc;
-                    padding: 10px 25px;
-                    border-radius: 25px;
-                    font-weight: 700;
-                    cursor: pointer;
-                    margin-top: 15px;
-                    width: 90%;
-                    transition: all 0.2s ease;
-                }
-                .btn:hover {
-                    background: rgba(0, 255, 100, 0.4);
-                    box-shadow: 0 0 15px rgba(0, 255, 100, 0.6);
-                }
-                .error {
-                    color: #ff4444;
-                    font-size: 0.85rem;
-                    margin-top: 10px;
-                    display: none;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="login-card">
-                <h1>LIMELY</h1>
-                <p>Log in to access your dashboard</p>
-                <input type="text" id="username" class="input-field" placeholder="Username...">
-                <input type="password" id="password" class="input-field" placeholder="Password...">
-                <div id="error" class="error"></div>
-                <button class="btn" onclick="login()">Log In</button>
-            </div>
-
-            <script>
-                async function login() {
-                    const username = document.getElementById('username').value.trim();
-                    const password = document.getElementById('password').value.trim();
-                    const errDiv = document.getElementById('error');
-
-                    if (!username || !password) {
-                        errDiv.innerText = 'Username and password required';
-                        errDiv.style.display = 'block';
-                        return;
-                    }
-
-                    errDiv.style.display = 'none';
-
-                    try {
-                        const res = await fetch('/api/auth', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username, password })
-                        });
-                        const data = await res.json();
-
-                        if (data.success) {
-                            localStorage.setItem('limely_username', data.username);
-                            window.location.href = '/i-ready/home';
-                        } else {
-                            errDiv.innerText = data.message || 'Login failed';
-                            errDiv.style.display = 'block';
-                        }
-                    } catch (err) {
-                        errDiv.innerText = 'Server error. Please try again.';
-                        errDiv.style.display = 'block';
-                    }
-                }
-            </script>
-        </body>
-        </html>
-    `);
+    res.redirect('/i-ready/home');
 });
 
 // Authentication Endpoint
@@ -267,3 +141,9 @@ app.get('/api/friends/:username', async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+    const { error } = await supabase
+        .from('friends')
+        .insert([{ user_a: userA, user_b: userB, status: 'accepted' }]);
+
+    if (error) return res.status(400).json({ success: false, message: 'Already friends
