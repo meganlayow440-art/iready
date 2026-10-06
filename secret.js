@@ -469,8 +469,12 @@ router.get('/home', (req, res) => {
                 let localAudioStream = null;
 
                 function nextStep(step) {
-                    document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
-                    document.getElementById('step-' + step).classList.add('active');
+                    const steps = document.querySelectorAll('.modal-step');
+                    steps.forEach(s => s.classList.remove('active'));
+                    const target = document.getElementById('step-' + step);
+                    if (target) {
+                        target.classList.add('active');
+                    }
                 }
 
                 async function handleAuth() {
@@ -636,7 +640,7 @@ router.get('/home', (req, res) => {
                         let html = '';
                         for (let i = 0; i < data.friends.length; i++) {
                             const f = data.friends[i];
-                            html += '<div style="display:flex; justify-space-between; align-items:center; margin-bottom:6px;">' +
+                            html += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
                                     '<span>👤 ' + f + '</span>' +
                                     '<button class="modal-btn" style="padding:2px 8px; font-size:0.75rem; margin:0;" onclick="callFriend(\'' + f + '\')">📞 Call</button>' +
                                     '</div>';
