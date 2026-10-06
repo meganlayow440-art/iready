@@ -232,6 +232,20 @@ router.get('/home', (req, res) => {
                     font-weight: 500;
                 }
 
+                .custom-url-input {
+                    width: 85%;
+                    padding: 8px 10px;
+                    margin-top: 10px;
+                    background: #050f05;
+                    border: 1px solid rgba(0, 255, 100, 0.4);
+                    border-radius: 8px;
+                    color: #00ff66;
+                    font-family: 'Quicksand', sans-serif;
+                    font-size: 0.85rem;
+                    text-align: center;
+                    outline: none;
+                }
+
                 .top-left-bar {
                     position: absolute;
                     top: 20px;
@@ -372,15 +386,24 @@ router.get('/home', (req, res) => {
                                 <div class="game-name">Cinecat</div>
                                 <div class="game-desc">Watch Movies And TV for free</div>
                             </div>
-                                    <div onclick="openGame('https://beta.cinecat.eu/')" class="game-card">
+                            <div onclick="openGame('https://beta.cinecat.eu/')" class="game-card">
                                 <div class="game-icon">🌐🐱</div>
-                                <div class="game-name"> Beta Cinecat</div>
-                                <div class="game-desc">Basicly Cinecat But A Little Bit Better</div>
+                                <div class="game-name">Beta Cinecat</div>
+                                <div class="game-desc">Basically Cinecat But A Little Bit Better</div>
                             </div>
-                                               <div onclick="openGame('hhttps://distrosea.com/')" class="game-card">
+                            <div onclick="openGame('https://distrosea.com/')" class="game-card">
                                 <div class="game-icon">🐧</div>
                                 <div class="game-name">DistroSea</div>
-                                <div class="game-desc">VM Service that allows fulll unblocking (ment For Testing distos but can be used for web exploring when signed in)</div>
+                                <div class="game-desc">VM Service meant for testing distros</div>
+                            </div>
+                            
+                            <!-- Custom URL Card -->
+                            <div class="game-card" onclick="event.stopPropagation()">
+                                <div class="game-icon">🔗</div>
+                                <div class="game-name">Custom Site</div>
+                                <div class="game-desc">Open any website in iframe</div>
+                                <input type="text" id="custom-url-field" class="custom-url-input" placeholder="https://example.com" onkeydown="if(event.key==='Enter') openCustomUrl()">
+                                <button class="modal-btn" style="padding: 6px 15px; margin-top: 8px; font-size: 0.85rem;" onclick="openCustomUrl()">Go</button>
                             </div>
                         </div>
                     </div>
@@ -464,6 +487,17 @@ router.get('/home', (req, res) => {
                     document.getElementById('game-iframe').src = url;
                     document.getElementById('main-view').style.display = 'none';
                     document.getElementById('game-view').style.display = 'flex';
+                }
+
+                function openCustomUrl() {
+                    let inputUrl = document.getElementById('custom-url-field').value.trim();
+                    if (!inputUrl) return;
+
+                    if (!inputUrl.startsWith('http://') && !inputUrl.startsWith('https://')) {
+                        inputUrl = 'https://' + inputUrl;
+                    }
+
+                    openGame(inputUrl);
                 }
 
                 function closeGame() {
