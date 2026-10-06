@@ -368,12 +368,12 @@ router.get('/home', (req, res) => {
                                 <div class="game-desc">Pop balloons with sharp thorns</div>
                             </div>
                             <div onclick="openGame('https://cinecat.eu/')" class="game-card">
-                                <div class="game-icon">🐱</div>
+                                <div class="game-icon">🟪🐱</div>
                                 <div class="game-name">Cinecat</div>
                                 <div class="game-desc">Watch Movies And TV for free</div>
                             </div>
-                                    <div onclick="openGame('https://.beta.cinecat.eu/')" class="game-card">
-                                <div class="game-icon">🐱</div>
+                                    <div onclick="openGame('https://beta.cinecat.eu/')" class="game-card">
+                                <div class="game-icon">🌐🐱</div>
                                 <div class="game-name"> Beta Cinecat</div>
                                 <div class="game-desc">Basicly Cinecat But A Little Bit Better</div>
                             </div>
