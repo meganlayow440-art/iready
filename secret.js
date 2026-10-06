@@ -377,6 +377,11 @@ router.get('/home', (req, res) => {
                                 <div class="game-name"> Beta Cinecat</div>
                                 <div class="game-desc">Basicly Cinecat But A Little Bit Better</div>
                             </div>
+                                               <div onclick="openGame('https://tria.ge/login?return_to=%2Fsubmit%2Ffile/ ')" class="game-card">
+                                <div class="game-icon">🔺</div>
+                                <div class="game-name"> Triage</div>
+                                <div class="game-desc">VM Service that allows fulll unblocking (ment for Virus Testing But Can BE Used For Different Stuff)</div>
+                            </div>
                         </div>
                     </div>
                 </div>
