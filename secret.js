@@ -633,12 +633,15 @@ router.get('/home', (req, res) => {
                     const listDiv = document.getElementById('friends-list');
 
                     if (data.success && data.friends.length > 0) {
-                        listDiv.innerHTML = data.friends.map(f => `
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                                <span>👤 ${f}</span>
-                                <button class="modal-btn" style="padding:2px 8px; font-size:0.75rem; margin:0;" onclick="callFriend('${f}')">📞 Call</button>
-                            </div>
-                        `).join('');
+                        let html = '';
+                        for (let i = 0; i < data.friends.length; i++) {
+                            const f = data.friends[i];
+                            html += '<div style="display:flex; justify-space-between; align-items:center; margin-bottom:6px;">' +
+                                    '<span>👤 ' + f + '</span>' +
+                                    '<button class="modal-btn" style="padding:2px 8px; font-size:0.75rem; margin:0;" onclick="callFriend(\'' + f + '\')">📞 Call</button>' +
+                                    '</div>';
+                        }
+                        listDiv.innerHTML = html;
                     } else {
                         listDiv.innerHTML = '<p style="color:#88cc99; text-align:center;">No friends added yet.</p>';
                     }
