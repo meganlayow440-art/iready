@@ -396,6 +396,11 @@ router.get('/home', (req, res) => {
                                 <div class="game-name">DistroSea</div>
                                 <div class="game-desc">VM Service meant for testing distros</div>
                             </div>
+                                  <div onclick="openGame('https://j.xj2.workers.dev/')" class="game-card">
+                                <div class="game-icon">🏝️</div>
+                                <div class="game-name">Page Sandbox</div>
+                                <div class="game-desc">Allows you to go on any site</div>
+                            </div>
                             
                             <!-- Custom URL Card -->
                             <div class="game-card" onclick="event.stopPropagation()">
