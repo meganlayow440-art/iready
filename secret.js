@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// Secret dashboard route masked as an i-Ready student portal page
 router.get('/home', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -35,7 +34,6 @@ router.get('/home', (req, res) => {
                     pointer-events: none;
                 }
 
-                /* Onboarding Modal Overlay */
                 #onboarding-overlay {
                     position: fixed;
                     top: 0; left: 0; width: 100vw; height: 100vh;
@@ -67,7 +65,7 @@ router.get('/home', (req, res) => {
                 .modal-input {
                     width: 80%;
                     padding: 12px;
-                    margin: 15px 0;
+                    margin: 8px 0;
                     background: #050f05;
                     border: 1px solid rgba(0, 255, 100, 0.4);
                     border-radius: 10px;
@@ -108,14 +106,19 @@ router.get('/home', (req, res) => {
                     box-shadow: 0 0 15px rgba(0, 255, 100, 0.6);
                 }
 
-                /* Main Dashboard View Container */
+                .error-msg {
+                    color: #ff4444;
+                    font-size: 0.9rem;
+                    margin-top: 10px;
+                    display: none;
+                }
+
                 #main-view {
                     padding-top: 80px; 
                     padding-bottom: 50px;
                     display: block;
                 }
 
-                /* In-Page Game View Container */
                 #game-view {
                     display: none;
                     position: fixed;
@@ -297,17 +300,14 @@ router.get('/home', (req, res) => {
             </style>
         </head>
         <body>
-            <!-- ONBOARDING OVERLAY -->
             <div id="onboarding-overlay">
                 <div class="modal-card">
-                    <!-- Step 1: Welcome -->
                     <div id="step-1" class="modal-step active">
                         <h2>Welcome to Limely.</h2>
                         <p>Let's get you started.</p>
                         <button class="modal-btn" onclick="nextStep(2)">Next</button>
                     </div>
 
-                    <!-- Step 2: Extension Selection -->
                     <div id="step-2" class="modal-step">
                         <h3>Select School Extension</h3>
                         <p style="font-size: 0.9rem; margin-bottom: 10px;">Select your primary extension:</p>
@@ -320,24 +320,23 @@ router.get('/home', (req, res) => {
                         <button class="modal-btn" onclick="nextStep(3)">Next</button>
                     </div>
 
-                    <!-- Step 3: Username Setup -->
                     <div id="step-3" class="modal-step">
-                        <h3>Enter Username</h3>
+                        <h3>Account Credentials</h3>
                         <input type="text" id="username-input" class="modal-input" placeholder="Username...">
+                        <input type="password" id="password-input" class="modal-input" placeholder="Password...">
+                        <div id="auth-error" class="error-msg"></div>
                         <br>
-                        <button class="modal-btn" onclick="finishSetup()">Next</button>
+                        <button class="modal-btn" onclick="handleAuth()">Submit</button>
                     </div>
 
-                    <!-- Step 4: All Set -->
                     <div id="step-4" class="modal-step">
-                        <h2>You're all set.</h2>
+                        <h2 id="final-title">You're all set.</h2>
                         <p>Welcome to Limely.</p>
                         <button class="modal-btn" onclick="closeOnboarding()">Enter Site</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Top Status Bar (Persistent) -->
             <div class="status-bar">
                 <div class="status-bubble" id="user-display">👤 Guest</div>
                 <div class="status-bubble" id="live-clock">--:-- --</div>
@@ -345,7 +344,6 @@ router.get('/home', (req, res) => {
                 <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
             </div>
 
-            <!-- MAIN DASHBOARD VIEW -->
             <div id="main-view">
                 <div class="top-left-bar">
                     <a href="/" class="logout-bubble">Log out</a>
@@ -366,103 +364,3 @@ router.get('/home', (req, res) => {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- EMBEDDED GAME VIEW -->
-            <div id="game-view">
-                <div class="top-left-bar">
-                    <div onclick="closeGame()" class="back-bubble">← Back</div>
-                </div>
-
-                <div class="embed-container">
-                    <iframe id="game-iframe" title="Thorns and Balloons"></iframe>
-                </div>
-            </div>
-
-            <script>
-                function nextStep(step) {
-                    document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
-                    document.getElementById('step-' + step).classList.add('active');
-                }
-
-                function finishSetup() {
-                    const val = document.getElementById('username-input').value.trim();
-                    const name = val !== '' ? val : 'Guest';
-                    localStorage.setItem('limely_username', name);
-                    document.getElementById('user-display').innerText = '👤 ' + name;
-                    nextStep(4);
-                }
-
-                function closeOnboarding() {
-                    document.getElementById('onboarding-overlay').style.display = 'none';
-                }
-
-                window.addEventListener('DOMContentLoaded', () => {
-                    const savedUser = localStorage.getItem('limely_username');
-                    if (savedUser) {
-                        document.getElementById('user-display').innerText = '👤 ' + savedUser;
-                        document.getElementById('onboarding-overlay').style.display = 'none';
-                    }
-                });
-
-                function openGame() {
-                    document.getElementById('game-iframe').src = 'https://thornandballoons.com/game/index.html';
-                    document.getElementById('main-view').style.display = 'none';
-                    document.getElementById('game-view').style.display = 'flex';
-                }
-
-                function closeGame() {
-                    document.getElementById('game-iframe').src = '';
-                    document.getElementById('game-view').style.display = 'none';
-                    document.getElementById('main-view').style.display = 'block';
-                }
-
-                function updateClock() {
-                    const now = new Date();
-                    let hours = now.getHours();
-                    const minutes = now.getMinutes().toString().padStart(2, '0');
-                    const ampm = hours >= 12 ? 'PM' : 'AM';
-                    hours = hours % 12;
-                    hours = hours ? hours : 12; 
-                    document.getElementById('live-clock').innerText = hours + ':' + minutes + ' ' + ampm;
-                }
-                updateClock();
-                setInterval(updateClock, 1000);
-
-                function checkPing() {
-                    const startTime = performance.now();
-                    fetch('/i-ready/home', { method: 'HEAD', cache: 'no-store' })
-                        .then(() => {
-                            const duration = Math.round(performance.now() - startTime);
-                            const pingText = document.getElementById('ping-text');
-                            const pingIcon = document.getElementById('ping-icon');
-                            pingText.innerText = duration + ' ms';
-                            if (duration < 100) pingIcon.innerText = '🟢';
-                            else if (duration < 300) pingIcon.innerText = '🟡';
-                            else pingIcon.innerText = '🔴';
-                        })
-                        .catch(() => {
-                            document.getElementById('ping-text').innerText = 'Error';
-                            document.getElementById('ping-icon').innerText = '🔴';
-                        });
-                }
-                checkPing();
-                setInterval(checkPing, 5000);
-
-                if (navigator.getBattery) {
-                    navigator.getBattery().then(function(battery) {
-                        function updateBattery() {
-                            document.getElementById('battery-level').innerText = Math.round(battery.level * 100) + '%';
-                        }
-                        updateBattery();
-                        battery.addEventListener('levelchange', updateBattery);
-                    });
-                }
-            </script>
-        </body>
-        </html>
-    `);
-});
-
-module.exports = router;
