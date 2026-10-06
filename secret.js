@@ -186,6 +186,8 @@ router.get('/home', (req, res) => {
                 .games-grid {
                     display: flex;
                     justify-content: center;
+                    gap: 20px;
+                    flex-wrap: wrap;
                 }
 
                 .game-card {
@@ -201,7 +203,7 @@ router.get('/home', (req, res) => {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    width: 260px;
+                    width: 240px;
                     cursor: pointer;
                 }
 
@@ -235,6 +237,8 @@ router.get('/home', (req, res) => {
                     top: 20px;
                     left: 25px;
                     z-index: 10;
+                    display: flex;
+                    gap: 10px;
                 }
 
                 .logout-bubble, .back-bubble {
@@ -347,6 +351,7 @@ router.get('/home', (req, res) => {
             <div id="main-view">
                 <div class="top-left-bar">
                     <a href="/" class="logout-bubble">Log out</a>
+                    <div onclick="switchAccount()" class="logout-bubble">Switch Account</div>
                 </div>
 
                 <div class="content-container">
@@ -357,10 +362,15 @@ router.get('/home', (req, res) => {
                     <div class="games-section">
                         <div class="games-title">🎮 AVAILABLE GAMES</div>
                         <div class="games-grid">
-                            <div onclick="openGame()" class="game-card">
+                            <div onclick="openGame('https://thornandballoons.com/game/index.html')" class="game-card">
                                 <div class="game-icon">🎈</div>
                                 <div class="game-name">Thorns and Balloons</div>
                                 <div class="game-desc">Pop balloons with sharp thorns</div>
+                            </div>
+                            <div onclick="openGame('https://cinecat.eu/')" class="game-card">
+                                <div class="game-icon">🐱</div>
+                                <div class="game-name">Shine Cat</div>
+                                <div class="game-desc">Play Shine Cat</div>
                             </div>
                         </div>
                     </div>
@@ -373,7 +383,7 @@ router.get('/home', (req, res) => {
                 </div>
 
                 <div class="embed-container">
-                    <iframe id="game-iframe" title="Thorns and Balloons"></iframe>
+                    <iframe id="game-iframe" title="Game View"></iframe>
                 </div>
             </div>
 
@@ -419,6 +429,15 @@ router.get('/home', (req, res) => {
                     }
                 }
 
+                function switchAccount() {
+                    localStorage.removeItem('limely_username');
+                    document.getElementById('username-input').value = '';
+                    document.getElementById('password-input').value = '';
+                    document.getElementById('auth-error').style.display = 'none';
+                    document.getElementById('onboarding-overlay').style.display = 'flex';
+                    nextStep(3);
+                }
+
                 function closeOnboarding() {
                     document.getElementById('onboarding-overlay').style.display = 'none';
                 }
@@ -431,8 +450,8 @@ router.get('/home', (req, res) => {
                     }
                 });
 
-                function openGame() {
-                    document.getElementById('game-iframe').src = 'https://thornandballoons.com/game/index.html';
+                function openGame(url) {
+                    document.getElementById('game-iframe').src = url;
                     document.getElementById('main-view').style.display = 'none';
                     document.getElementById('game-view').style.display = 'flex';
                 }
