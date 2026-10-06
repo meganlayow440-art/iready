@@ -35,6 +35,79 @@ router.get('/home', (req, res) => {
                     pointer-events: none;
                 }
 
+                /* Onboarding Modal Overlay */
+                #onboarding-overlay {
+                    position: fixed;
+                    top: 0; left: 0; width: 100vw; height: 100vh;
+                    background: rgba(5, 15, 5, 0.95);
+                    backdrop-filter: blur(10px);
+                    z-index: 100;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .modal-card {
+                    background: rgba(0, 20, 10, 0.85);
+                    border: 1px solid #00ff66;
+                    border-radius: 20px;
+                    padding: 35px;
+                    width: 420px;
+                    box-shadow: 0 0 30px rgba(0, 255, 100, 0.3);
+                }
+
+                .modal-step {
+                    display: none;
+                }
+
+                .modal-step.active {
+                    display: block;
+                }
+
+                .modal-input {
+                    width: 80%;
+                    padding: 12px;
+                    margin: 15px 0;
+                    background: #050f05;
+                    border: 1px solid rgba(0, 255, 100, 0.4);
+                    border-radius: 10px;
+                    color: #00ff66;
+                    font-family: 'Quicksand', sans-serif;
+                    font-size: 1rem;
+                    text-align: center;
+                    outline: none;
+                }
+
+                .modal-select {
+                    width: 85%;
+                    padding: 12px;
+                    margin: 15px 0;
+                    background: #050f05;
+                    border: 1px solid rgba(0, 255, 100, 0.4);
+                    border-radius: 10px;
+                    color: #00ff66;
+                    font-family: 'Quicksand', sans-serif;
+                    font-size: 1rem;
+                    outline: none;
+                }
+
+                .modal-btn {
+                    background: rgba(0, 255, 100, 0.2);
+                    border: 1px solid #00ff66;
+                    color: #00ffcc;
+                    padding: 10px 25px;
+                    border-radius: 25px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    margin-top: 15px;
+                    transition: all 0.2s ease;
+                }
+
+                .modal-btn:hover {
+                    background: rgba(0, 255, 100, 0.4);
+                    box-shadow: 0 0 15px rgba(0, 255, 100, 0.6);
+                }
+
                 /* Main Dashboard View Container */
                 #main-view {
                     padding-top: 80px; 
@@ -224,8 +297,49 @@ router.get('/home', (req, res) => {
             </style>
         </head>
         <body>
+            <!-- ONBOARDING OVERLAY -->
+            <div id="onboarding-overlay">
+                <div class="modal-card">
+                    <!-- Step 1: Welcome -->
+                    <div id="step-1" class="modal-step active">
+                        <h2>Welcome to Limely.</h2>
+                        <p>Let's get you started.</p>
+                        <button class="modal-btn" onclick="nextStep(2)">Next</button>
+                    </div>
+
+                    <!-- Step 2: Extension Selection -->
+                    <div id="step-2" class="modal-step">
+                        <h3>Select School Extension</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 10px;">Select your primary extension:</p>
+                        <select id="ext-select" class="modal-select">
+                            <option value="linewize">Linewize</option>
+                            <option value="securly">Securly</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <br>
+                        <button class="modal-btn" onclick="nextStep(3)">Next</button>
+                    </div>
+
+                    <!-- Step 3: Username Setup -->
+                    <div id="step-3" class="modal-step">
+                        <h3>Enter Username</h3>
+                        <input type="text" id="username-input" class="modal-input" placeholder="Username...">
+                        <br>
+                        <button class="modal-btn" onclick="finishSetup()">Next</button>
+                    </div>
+
+                    <!-- Step 4: All Set -->
+                    <div id="step-4" class="modal-step">
+                        <h2>You're all set.</h2>
+                        <p>Welcome to Limely.</p>
+                        <button class="modal-btn" onclick="closeOnboarding()">Enter Site</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Top Status Bar (Persistent) -->
             <div class="status-bar">
+                <div class="status-bubble" id="user-display">👤 Guest</div>
                 <div class="status-bubble" id="live-clock">--:-- --</div>
                 <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
                 <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
@@ -255,7 +369,7 @@ router.get('/home', (req, res) => {
                 </div>
             </div>
 
-            <!-- EMBEDDED GAME VIEW (Keeps URL completely unchanged) -->
+            <!-- EMBEDDED GAME VIEW -->
             <div id="game-view">
                 <div class="top-left-bar">
                     <div onclick="closeGame()" class="back-bubble">← Back</div>
@@ -267,7 +381,31 @@ router.get('/home', (req, res) => {
             </div>
 
             <script>
-                // Instantly switches views locally in the DOM without altering the URL whatsoever
+                function nextStep(step) {
+                    document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
+                    document.getElementById('step-' + step).classList.add('active');
+                }
+
+                function finishSetup() {
+                    const val = document.getElementById('username-input').value.trim();
+                    const name = val !== '' ? val : 'Guest';
+                    localStorage.setItem('limely_username', name);
+                    document.getElementById('user-display').innerText = '👤 ' + name;
+                    nextStep(4);
+                }
+
+                function closeOnboarding() {
+                    document.getElementById('onboarding-overlay').style.display = 'none';
+                }
+
+                window.addEventListener('DOMContentLoaded', () => {
+                    const savedUser = localStorage.getItem('limely_username');
+                    if (savedUser) {
+                        document.getElementById('user-display').innerText = '👤 ' + savedUser;
+                        document.getElementById('onboarding-overlay').style.display = 'none';
+                    }
+                });
+
                 function openGame() {
                     document.getElementById('game-iframe').src = 'https://thornandballoons.com/game/index.html';
                     document.getElementById('main-view').style.display = 'none';
