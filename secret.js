@@ -364,3 +364,130 @@ router.get('/home', (req, res) => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div id="game-view">
+                <div class="top-left-bar">
+                    <div onclick="closeGame()" class="back-bubble">← Back</div>
+                </div>
+
+                <div class="embed-container">
+                    <iframe id="game-iframe" title="Thorns and Balloons"></iframe>
+                </div>
+            </div>
+
+            <script>
+                function nextStep(step) {
+                    document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
+                    document.getElementById('step-' + step).classList.add('active');
+                }
+
+                async function handleAuth() {
+                    const username = document.getElementById('username-input').value.trim();
+                    const password = document.getElementById('password-input').value.trim();
+                    const errorDiv = document.getElementById('auth-error');
+
+                    if (!username || !password) {
+                        errorDiv.innerText = 'Please enter both username and password';
+                        errorDiv.style.display = 'block';
+                        return;
+                    }
+
+                    errorDiv.style.display = 'none';
+
+                    try {
+                        const res = await fetch('/api/auth', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, password })
+                        });
+
+                        const data = await res.json();
+
+                        if (data.success) {
+                            localStorage.setItem('limely_username', data.username);
+                            document.getElementById('user-display').innerText = '👤 ' + data.username;
+                            nextStep(4);
+                        } else {
+                            errorDiv.innerText = data.message || 'Authentication failed';
+                            errorDiv.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorDiv.innerText = 'Server error. Please try again.';
+                        errorDiv.style.display = 'block';
+                    }
+                }
+
+                function closeOnboarding() {
+                    document.getElementById('onboarding-overlay').style.display = 'none';
+                }
+
+                window.addEventListener('DOMContentLoaded', () => {
+                    const savedUser = localStorage.getItem('limely_username');
+                    if (savedUser) {
+                        document.getElementById('user-display').innerText = '👤 ' + savedUser;
+                        document.getElementById('onboarding-overlay').style.display = 'none';
+                    }
+                });
+
+                function openGame() {
+                    document.getElementById('game-iframe').src = 'https://thornandballoons.com/game/index.html';
+                    document.getElementById('main-view').style.display = 'none';
+                    document.getElementById('game-view').style.display = 'flex';
+                }
+
+                function closeGame() {
+                    document.getElementById('game-iframe').src = '';
+                    document.getElementById('game-view').style.display = 'none';
+                    document.getElementById('main-view').style.display = 'block';
+                }
+
+                function updateClock() {
+                    const now = new Date();
+                    let hours = now.getHours();
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12;
+                    hours = hours ? hours : 12; 
+                    document.getElementById('live-clock').innerText = hours + ':' + minutes + ' ' + ampm;
+                }
+                updateClock();
+                setInterval(updateClock, 1000);
+
+                function checkPing() {
+                    const startTime = performance.now();
+                    fetch('/i-ready/home', { method: 'HEAD', cache: 'no-store' })
+                        .then(() => {
+                            const duration = Math.round(performance.now() - startTime);
+                            const pingText = document.getElementById('ping-text');
+                            const pingIcon = document.getElementById('ping-icon');
+                            pingText.innerText = duration + ' ms';
+                            if (duration < 100) pingIcon.innerText = '🟢';
+                            else if (duration < 300) pingIcon.innerText = '🟡';
+                            else pingIcon.innerText = '🔴';
+                        })
+                        .catch(() => {
+                            document.getElementById('ping-text').innerText = 'Error';
+                            document.getElementById('ping-icon').innerText = '🔴';
+                        });
+                }
+                checkPing();
+                setInterval(checkPing, 5000);
+
+                if (navigator.getBattery) {
+                    navigator.getBattery().then(function(battery) {
+                        function updateBattery() {
+                            document.getElementById('battery-level').innerText = Math.round(battery.level * 100) + '%';
+                        }
+                        updateBattery();
+                        battery.addEventListener('levelchange', updateBattery);
+                    });
+                }
+            </script>
+        </body>
+        </html>
+    `);
+});
+
+module.exports = router;
