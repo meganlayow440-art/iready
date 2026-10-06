@@ -5,6 +5,9 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+// Middleware
+app.use(express.json());
+
 // Supabase Connection Settings
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://hwhrsmftwowbxvauqopj.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3aHJzbWZ0d293Ynh2YXVxb3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzMTM1MjcsImV4cCI6MjEwNjg4OTUyN30.LhHsXtRzqkeeQW2IqOrKSLIQSvVGiakySHKpUHyXIYg';
@@ -13,21 +16,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const secretRouter = require('./secret');
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+// Mount secret route router
+app.use('/i-ready', secretRouter);
 
-// Login portal check
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    if (username === 'RigSentYou' && password === '1111') {
-        return res.redirect('/i-ready/home');
-    } else {
-        return res.redirect('/?error=invalid');
-    }
-});
-
-// Account Creation / Login API powered by Supabase
+// Authentication Endpoint
 app.post('/api/auth', async (req, res) => {
     const { username, password } = req.body;
 
@@ -38,7 +30,7 @@ app.post('/api/auth', async (req, res) => {
     try {
         const cleanUser = username.toLowerCase().trim();
 
-        // Check if username exists
+        // Check if user exists
         const { data: existingUser } = await supabase
             .from('users')
             .select('*')
@@ -63,7 +55,7 @@ app.post('/api/auth', async (req, res) => {
             return res.status(400).json({ success: false, message: 'That password is already in use by another user' });
         }
 
-        // Insert new account
+        // Insert new user
         const { error: insertError } = await supabase
             .from('users')
             .insert([{ username: cleanUser, password }]);
@@ -73,6 +65,11 @@ app.post('/api/auth', async (req, res) => {
             return res.status(500).json({ success: false, message: 'Database error: ' + insertError.message });
         }
 
+        // Create profile entry
+        await supabase
+            .from('profiles')
+            .upsert({ username: cleanUser }, { onConflict: 'username' });
+
         return res.json({ success: true, isNew: true, username: cleanUser });
 
     } catch (err) {
@@ -80,12 +77,12 @@ app.post('/api/auth', async (req, res) => {
     }
 });
 
-// --- Profile Update Route ---
+// Profile Update Endpoint
 app.post('/api/profile/update', async (req, res) => {
     const { username, bio, avatar_url } = req.body;
     if (!username) return res.status(400).json({ success: false, message: 'Username required' });
 
-    const { data, error } = await supabase
+    const { error } = await supabase
         .from('profiles')
         .upsert({ username: username.toLowerCase(), bio, avatar_url }, { onConflict: 'username' });
 
@@ -93,7 +90,7 @@ app.post('/api/profile/update', async (req, res) => {
     return res.json({ success: true, message: 'Profile updated!' });
 });
 
-// --- Fetch User Profile Route ---
+// Fetch Profile Endpoint
 app.get('/api/profile/:username', async (req, res) => {
     const { username } = req.params;
     const { data, error } = await supabase
@@ -106,13 +103,13 @@ app.get('/api/profile/:username', async (req, res) => {
     return res.json({ success: true, profile: data });
 });
 
-// --- Add Friend Route ---
+// Add Friend Endpoint
 app.post('/api/friends/add', async (req, res) => {
     const { username, friendUsername } = req.body;
     if (!username || !friendUsername) return res.status(400).json({ success: false, message: 'Both usernames required' });
 
-    const userA = username.toLowerCase();
-    const userB = friendUsername.toLowerCase();
+    const userA = username.toLowerCase().trim();
+    const userB = friendUsername.toLowerCase().trim();
 
     if (userA === userB) return res.status(400).json({ success: false, message: 'Cannot add yourself' });
 
@@ -124,9 +121,9 @@ app.post('/api/friends/add', async (req, res) => {
     return res.json({ success: true, message: `Added ${friendUsername} as friend!` });
 });
 
-// --- List Friends Route ---
+// List Friends Endpoint
 app.get('/api/friends/:username', async (req, res) => {
-    const user = req.params.username.toLowerCase();
+    const user = req.params.username.toLowerCase().trim();
     const { data, error } = await supabase
         .from('friends')
         .select('*')
@@ -138,12 +135,4 @@ app.get('/api/friends/:username', async (req, res) => {
     return res.json({ success: true, friends: friendsList });
 });
 
-app.use('/i-ready', secretRouter);
-
-app.use((req, res) => {
-    res.status(404).send("Page not found. Go back to <a href='/'>Home</a>.");
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
