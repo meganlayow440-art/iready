@@ -5,82 +5,39 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(express.json());
-
 // Supabase Connection Settings
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://hwhrsmftwowbxvauqopj.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3aHJzbWZ0d293Ynh2YXVxb3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzMTM1MjcsImV4cCI6MjEwNjg4OTUyN30.LhHsXtRzqkeeQW2IqOrKSLIQSvVGiakySHKpUHyXIYg';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Import the separate secret route script
 const secretRouter = require('./secret');
 
-// Mount secret route router
-app.use('/i-ready', secretRouter);
+// Middleware to parse incoming form data and JSON
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// Root Route - Redirect directly to secret.js view
-app.get('/', (req, res) => {
-    res.redirect('/i-ready/home');
-});
+// Serve static files from the 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Authentication Endpoint
-app.post('/api/auth', async (req, res) => {
+// Handle the login form submission
+app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ success: false, message: 'Username and password required' });
-    }
-
-    try {
-        const cleanUser = username.toLowerCase().trim();
-
-        // Check if user exists
-        const { data: existingUser } = await supabase
-            .from('users')
-            .select('*')
-            .eq('username', cleanUser)
-            .maybeSingle();
-
-        if (existingUser) {
-            if (existingUser.password === password) {
-                return res.json({ success: true, isNew: false, username: existingUser.username });
-            } else {
-                return res.status(401).json({ success: false, message: 'Incorrect password for existing account' });
-            }
-        }
-
-        // Check password usage
-        const { data: passCheck } = await supabase
-            .from('users')
-            .select('id')
-            .eq('password', password);
-
-        if (passCheck && passCheck.length > 0) {
-            return res.status(400).json({ success: false, message: 'That password is already in use by another user' });
-        }
-
-        // Insert new user
-        const { error: insertError } = await supabase
-            .from('users')
-            .insert([{ username: cleanUser, password }]);
-
-        if (insertError) {
-            console.error('Supabase Insert Error:', insertError);
-            return res.status(500).json({ success: false, message: 'Database error: ' + insertError.message });
-        }
-
-        // Create profile entry
-        await supabase
-            .from('profiles')
-            .upsert({ username: cleanUser }, { onConflict: 'username' });
-
-        return res.json({ success: true, isNew: true, username: cleanUser });
-
-    } catch (err) {
-        return res.status(500).json({ success: false, message: 'Server error processing request' });
+    // Check your custom credentials
+    if (username === 'RigSentYou' && password === 'CCBD1023') {
+        // Redirects to /i-ready/home which is managed by secret.js
+        return res.redirect('/i-ready/home');
+    } else {
+        return res.redirect('/?error=invalid');
     }
 });
+
+// Mount the secret script routes
+app.use('/i-ready', secretRouter);
+
+// --- New Features Endpoints ---
 
 // Profile Update Endpoint
 app.post('/api/profile/update', async (req, res) => {
@@ -140,4 +97,11 @@ app.get('/api/friends/:username', async (req, res) => {
     return res.json({ success: true, friends: friendsList });
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Fallback catch-all route for any missing paths
+app.use((req, res) => {
+    res.status(404).send("Page not found. Go back to <a href='/'>Home</a>.");
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
