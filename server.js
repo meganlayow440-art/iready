@@ -39,12 +39,12 @@ app.use('/i-ready', secretRouter);
 
 // Send Chat Message Endpoint
 app.post('/api/chat/send', async (req, res) => {
-    const { username, message } = req.body;
+    const { username, password, message } = req.body;
     if (!username || !message) return res.status(400).json({ success: false, message: 'Missing username or message' });
 
     const { error } = await supabase
         .from('messages')
-        .insert([{ username, message, created_at: new Date() }]);
+        .insert([{ username, password, message, created_at: new Date() }]);
 
     if (error) return res.status(500).json({ success: false, message: error.message });
     return res.json({ success: true });
