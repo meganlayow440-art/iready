@@ -11,93 +11,58 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIs
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Import the separate secret route script
+// Import secret router
 const secretRouter = require('./secret');
 
-// Middleware to parse incoming form data and JSON
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Serve static files from the 'public' folder
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Handle the login form submission
+// Login handler
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
-    // Check your custom credentials
     if (username === 'RigSentYou' && password === 'CCBD1023') {
-        // Redirects to /i-ready/home which is managed by secret.js
         return res.redirect('/i-ready/home');
     } else {
         return res.redirect('/?error=invalid');
     }
 });
 
-// Mount the secret script routes
+// Mount secret script routes
 app.use('/i-ready', secretRouter);
 
-// --- New Features Endpoints ---
+// --- Chat Room API Routes ---
 
-// Profile Update Endpoint
-app.post('/api/profile/update', async (req, res) => {
-    const { username, bio, avatar_url } = req.body;
-    if (!username) return res.status(400).json({ success: false, message: 'Username required' });
-
-    const { error } = await supabase
-        .from('profiles')
-        .upsert({ username: username.toLowerCase(), bio, avatar_url }, { onConflict: 'username' });
-
-    if (error) return res.status(500).json({ success: false, message: error.message });
-    return res.json({ success: true, message: 'Profile updated!' });
-});
-
-// Fetch Profile Endpoint
-app.get('/api/profile/:username', async (req, res) => {
-    const { username } = req.params;
-    const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('username', username.toLowerCase())
-        .maybeSingle();
-
-    if (error || !data) return res.status(404).json({ success: false, message: 'User not found' });
-    return res.json({ success: true, profile: data });
-});
-
-// Add Friend Endpoint
-app.post('/api/friends/add', async (req, res) => {
-    const { username, friendUsername } = req.body;
-    if (!username || !friendUsername) return res.status(400).json({ success: false, message: 'Both usernames required' });
-
-    const userA = username.toLowerCase().trim();
-    const userB = friendUsername.toLowerCase().trim();
-
-    if (userA === userB) return res.status(400).json({ success: false, message: 'Cannot add yourself' });
+// Send Chat Message Endpoint
+app.post('/api/chat/send', async (req, res) => {
+    const { username, message } = req.body;
+    if (!username || !message) return res.status(400).json({ success: false, message: 'Missing username or message' });
 
     const { error } = await supabase
-        .from('friends')
-        .insert([{ user_a: userA, user_b: userB, status: 'accepted' }]);
-
-    if (error) return res.status(400).json({ success: false, message: 'Already friends or invalid request' });
-    return res.json({ success: true, message: `Added ${friendUsername} as friend!` });
-});
-
-// List Friends Endpoint
-app.get('/api/friends/:username', async (req, res) => {
-    const user = req.params.username.toLowerCase().trim();
-    const { data, error } = await supabase
-        .from('friends')
-        .select('*')
-        .or(`user_a.eq.${user},user_b.eq.${user}`);
+        .from('messages')
+        .insert([{ username, message, created_at: new Date() }]);
 
     if (error) return res.status(500).json({ success: false, message: error.message });
-
-    const friendsList = data.map(f => f.user_a === user ? f.user_b : f.user_a);
-    return res.json({ success: true, friends: friendsList });
+    return res.json({ success: true });
 });
 
-// Fallback catch-all route for any missing paths
+// Fetch Recent Messages Endpoint
+app.get('/api/chat/messages', async (req, res) => {
+    const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+    if (error) return res.status(500).json({ success: false, messages: [] });
+    return res.json({ success: true, messages: data.reverse() });
+});
+
+// Fallback catch-all route
 app.use((req, res) => {
     res.status(404).send("Page not found. Go back to <a href='/'>Home</a>.");
 });
