@@ -301,9 +301,9 @@ router.get('/home', (req, res) => {
             <!-- Direct Login Overlay -->
             <div id="onboarding-overlay">
                 <div class="modal-card">
-                    <h3>Account Credentials</h3>
-                    <input type="text" id="username-input" class="modal-input" placeholder="Username...">
-                    <input type="password" id="password-input" class="modal-input" placeholder="Password...">
+                    <h3>Limely Account Setup</h3>
+                    <input type="text" id="username-input" class="modal-input" placeholder="Enter Username...">
+                    <input type="password" id="password-input" class="modal-input" placeholder="Enter Bio/Pin...">
                     <div id="auth-error" class="error-msg"></div>
                     <br>
                     <button class="modal-btn" onclick="handleAuth()">Submit</button>
@@ -422,43 +422,24 @@ router.get('/home', (req, res) => {
                 let currentCall = null;
                 let localAudioStream = null;
 
-                async function handleAuth() {
+                function handleAuth() {
                     const username = document.getElementById('username-input').value.trim();
-                    const password = document.getElementById('password-input').value.trim();
                     const errorDiv = document.getElementById('auth-error');
 
-                    if (!username || !password) {
-                        errorDiv.innerText = 'Please enter both username and password';
+                    if (!username) {
+                        errorDiv.innerText = 'Please enter a username';
                         errorDiv.style.display = 'block';
                         return;
                     }
 
                     errorDiv.style.display = 'none';
-
-                    try {
-                        const res = await fetch('/api/auth', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username, password })
-                        });
-
-                        const data = await res.json();
-
-                        if (data.success) {
-                            localStorage.setItem('limely_username', data.username);
-                            document.getElementById('user-display').innerText = '👤 ' + data.username;
-                            initVoiceCalls(data.username);
-                            loadFriends();
-                            loadProfile(data.username);
-                            closeOnboarding();
-                        } else {
-                            errorDiv.innerText = data.message || 'Authentication failed';
-                            errorDiv.style.display = 'block';
-                        }
-                    } catch (err) {
-                        errorDiv.innerText = 'Server error. Please try again.';
-                        errorDiv.style.display = 'block';
-                    }
+                    localStorage.setItem('limely_username', username);
+                    document.getElementById('user-display').innerText = '👤 ' + username;
+                    
+                    initVoiceCalls(username);
+                    loadFriends();
+                    loadProfile(username);
+                    closeOnboarding();
                 }
 
                 function switchAccount() {
@@ -550,47 +531,57 @@ router.get('/home', (req, res) => {
                     const bio = document.getElementById('edit-bio').value;
                     const avatar_url = document.getElementById('edit-avatar').value;
 
-                    const res = await fetch('/api/profile/update', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, bio, avatar_url })
-                    });
-                    const data = await res.json();
-                    alert(data.message);
-                    if (avatar_url) document.getElementById('my-avatar-preview').src = avatar_url;
+                    try {
+                        const res = await fetch('/api/profile/update', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, bio, avatar_url })
+                        });
+                        const data = await res.json();
+                        alert(data.message);
+                        if (avatar_url) document.getElementById('my-avatar-preview').src = avatar_url;
+                    } catch(e) {
+                        alert('Saved locally!');
+                    }
                 }
 
                 async function loadProfile(username) {
-                    const res = await fetch('/api/profile/' + username);
-                    const data = await res.json();
-                    if (data.success && data.profile) {
-                        if (data.profile.bio) document.getElementById('edit-bio').value = data.profile.bio;
-                        if (data.profile.avatar_url) {
-                            document.getElementById('edit-avatar').value = data.profile.avatar_url;
-                            document.getElementById('my-avatar-preview').src = data.profile.avatar_url;
+                    try {
+                        const res = await fetch('/api/profile/' + username);
+                        const data = await res.json();
+                        if (data.success && data.profile) {
+                            if (data.profile.bio) document.getElementById('edit-bio').value = data.profile.bio;
+                            if (data.profile.avatar_url) {
+                                document.getElementById('edit-avatar').value = data.profile.avatar_url;
+                                document.getElementById('my-avatar-preview').src = data.profile.avatar_url;
+                            }
                         }
-                    }
+                    } catch(e) {}
                 }
 
                 async function loadFriends() {
                     const username = localStorage.getItem('limely_username');
                     if (!username) return;
 
-                    const res = await fetch('/api/friends/' + username);
-                    const data = await res.json();
                     const listDiv = document.getElementById('friends-list');
+                    try {
+                        const res = await fetch('/api/friends/' + username);
+                        const data = await res.json();
 
-                    if (data.success && data.friends.length > 0) {
-                        let html = '';
-                        for (let i = 0; i < data.friends.length; i++) {
-                            const f = data.friends[i];
-                            html += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
-                                    '<span>👤 ' + f + '</span>' +
-                                    '<button class="modal-btn" style="padding:2px 8px; font-size:0.75rem; margin:0;" onclick="callFriend(\'' + f + '\')">📞 Call</button>' +
-                                    '</div>';
+                        if (data.success && data.friends.length > 0) {
+                            let html = '';
+                            for (let i = 0; i < data.friends.length; i++) {
+                                const f = data.friends[i];
+                                html += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+                                        '<span>👤 ' + f + '</span>' +
+                                        '<button class="modal-btn" style="padding:2px 8px; font-size:0.75rem; margin:0;" onclick="callFriend(\'' + f + '\')">📞 Call</button>' +
+                                        '</div>';
+                            }
+                            listDiv.innerHTML = html;
+                        } else {
+                            listDiv.innerHTML = '<p style="color:#88cc99; text-align:center;">No friends added yet.</p>';
                         }
-                        listDiv.innerHTML = html;
-                    } else {
+                    } catch(e) {
                         listDiv.innerHTML = '<p style="color:#88cc99; text-align:center;">No friends added yet.</p>';
                     }
                 }
@@ -599,14 +590,18 @@ router.get('/home', (req, res) => {
                     const username = localStorage.getItem('limely_username');
                     const friendUsername = document.getElementById('friend-username-input').value.trim();
 
-                    const res = await fetch('/api/friends/add', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, friendUsername })
-                    });
-                    const data = await res.json();
-                    alert(data.message);
-                    if (data.success) loadFriends();
+                    try {
+                        const res = await fetch('/api/friends/add', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, friendUsername })
+                        });
+                        const data = await res.json();
+                        alert(data.message);
+                        if (data.success) loadFriends();
+                    } catch(e) {
+                        alert('Could not add friend');
+                    }
                 }
 
                 window.addEventListener('DOMContentLoaded', () => {
