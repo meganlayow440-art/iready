@@ -10,7 +10,6 @@ router.get('/home', (req, res) => {
             <title>i-Ready - Student Dashboard</title>
             <link rel="icon" type="image/png" href="/images/favicon.png">
             <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-            <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
             <style>
                 body { 
                     background-color: #050f05; 
@@ -295,6 +294,34 @@ router.get('/home', (req, res) => {
                     height: 100%;
                     border: none;
                 }
+
+                /* Chat Box Custom Styles */
+                #chat-messages-box {
+                    background: #020802;
+                    border: 1px solid rgba(0, 255, 100, 0.3);
+                    border-radius: 12px;
+                    height: 200px;
+                    overflow-y: auto;
+                    padding: 12px;
+                    text-align: left;
+                    font-size: 0.9rem;
+                    margin-bottom: 10px;
+                }
+
+                .chat-msg {
+                    margin-bottom: 8px;
+                    line-height: 1.3;
+                    word-wrap: break-word;
+                }
+
+                .chat-msg-user {
+                    color: #00ffcc;
+                    font-weight: 700;
+                }
+
+                .chat-msg-text {
+                    color: #aaffcc;
+                }
             </style>
         </head>
         <body>
@@ -302,11 +329,11 @@ router.get('/home', (req, res) => {
             <div id="onboarding-overlay">
                 <div class="modal-card">
                     <h2>Welcome to Limely.</h2>
-                    <p>Enter your display name to start:</p>
+                    <p>Enter your display name for chat:</p>
                     <input type="text" id="username-input" class="modal-input" placeholder="Username...">
                     <div id="auth-error" class="error-msg"></div>
                     <br>
-                    <button class="modal-btn" type="button" id="submit-btn" onclick="handleAuth()">Enter Site</button>
+                    <button class="modal-btn" type="button" onclick="handleAuth()">Enter Site</button>
                 </div>
             </div>
 
@@ -316,13 +343,6 @@ router.get('/home', (req, res) => {
                 <div class="status-bubble" id="ping-bubble"><span id="ping-icon">🟢</span> <span id="ping-text">-- ms</span></div>
                 <div class="status-bubble">⚡ <span id="battery-level">98%</span></div>
             </div>
-
-            <!-- Voice Call Bar -->
-            <div id="call-bar" style="display:none; position:fixed; bottom:20px; right:20px; background:#002010; border:1px solid #00ff66; padding:15px; border-radius:15px; z-index:200;">
-                <span id="call-status">🎙️ In Voice Call with <b id="call-target">--</b></span>
-                <button onclick="endVoiceCall()" style="background:#ff4444; border:none; color:white; padding:5px 12px; border-radius:8px; margin-left:10px; cursor:pointer;">Hang Up</button>
-            </div>
-            <audio id="remote-audio" autoplay></audio>
 
             <div id="main-view">
                 <div class="top-left-bar">
@@ -375,32 +395,17 @@ router.get('/home', (req, res) => {
                         </div>
                     </div>
 
-                    <!-- Profile & Social Hub -->
+                    <!-- Global Chat Room -->
                     <div class="games-section" style="margin-top: 40px;">
-                        <div class="games-title">💬 COMMUNITY & VOICE HUB</div>
-                        <div class="games-grid">
-                            
-                            <!-- Profile Card -->
-                            <div class="game-card" style="width: 260px; text-align: left;" onclick="event.stopPropagation()">
-                                <div class="game-name" style="text-align:center;">👤 Profile</div>
-                                <img id="my-avatar-preview" src="https://api.iconify.design/noto:lime.svg" style="width:50px; height:50px; display:block; margin:8px auto; border-radius:50%;">
-                                <label style="font-size:0.8rem; color:#88cc99;">Bio:</label>
-                                <input type="text" id="edit-bio" class="custom-url-input" placeholder="Your custom bio...">
-                                <label style="font-size:0.8rem; color:#88cc99; margin-top:5px; display:block;">Avatar URL:</label>
-                                <input type="text" id="edit-avatar" class="custom-url-input" placeholder="https://image-link.png">
-                                <button class="modal-btn" style="width:100%; font-size:0.85rem; padding:6px; margin-top:10px;" onclick="saveProfile()">Save Profile</button>
+                        <div class="games-title">💬 GLOBAL CHAT ROOM</div>
+                        <div style="max-width: 600px; margin: 0 auto;" onclick="event.stopPropagation()">
+                            <div id="chat-messages-box">
+                                <p style="color:#88cc99; text-align:center;">Loading messages...</p>
                             </div>
-
-                            <!-- Friends & Calls Card -->
-                            <div class="game-card" style="width: 260px; text-align: left;" onclick="event.stopPropagation()">
-                                <div class="game-name" style="text-align:center;">👥 Friends</div>
-                                <input type="text" id="friend-username-input" class="custom-url-input" placeholder="Friend username...">
-                                <button class="modal-btn" style="width:100%; font-size:0.85rem; padding:6px; margin-top:8px;" onclick="addFriend()">Add Friend</button>
-                                <div id="friends-list" style="margin-top:15px; max-height:120px; overflow-y:auto; font-size:0.85rem;">
-                                    <p style="color:#88cc99; text-align:center;">Loading friends...</p>
-                                </div>
+                            <div style="display:flex; gap:10px;">
+                                <input type="text" id="chat-input" class="custom-url-input" style="flex:1; margin:0;" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()">
+                                <button class="modal-btn" style="margin:0; padding: 8px 20px;" onclick="sendMessage()">Send</button>
                             </div>
-
                         </div>
                     </div>
 
@@ -418,10 +423,6 @@ router.get('/home', (req, res) => {
             </div>
 
             <script>
-                let peer = null;
-                let currentCall = null;
-                let localAudioStream = null;
-
                 function handleAuth() {
                     const inputEl = document.getElementById('username-input');
                     const username = inputEl ? inputEl.value.trim() : '';
@@ -436,29 +437,21 @@ router.get('/home', (req, res) => {
                     }
 
                     if (errorDiv) errorDiv.style.display = 'none';
-                    
                     localStorage.setItem('limely_username', username);
                     
                     const userDisplay = document.getElementById('user-display');
                     if (userDisplay) userDisplay.innerText = '👤 ' + username;
 
-                    // Immediately hide overlay so the user enters the site
                     const overlay = document.getElementById('onboarding-overlay');
                     if (overlay) overlay.style.display = 'none';
 
-                    // Background loads
-                    try { initVoiceCalls(username); } catch(e) {}
-                    try { loadFriends(); } catch(e) {}
-                    try { loadProfile(username); } catch(e) {}
+                    fetchMessages();
                 }
 
                 function switchAccount() {
                     localStorage.removeItem('limely_username');
                     const inputEl = document.getElementById('username-input');
                     if (inputEl) inputEl.value = '';
-                    const errorDiv = document.getElementById('auth-error');
-                    if (errorDiv) errorDiv.style.display = 'none';
-                    
                     const overlay = document.getElementById('onboarding-overlay');
                     if (overlay) overlay.style.display = 'flex';
                 }
@@ -486,141 +479,54 @@ router.get('/home', (req, res) => {
                     document.getElementById('main-view').style.display = 'block';
                 }
 
-                // --- Voice Calls & PeerJS ---
-                function initVoiceCalls(username) {
-                    peer = new Peer('limely-' + username.toLowerCase());
-
-                    peer.on('call', (call) => {
-                        const callerName = call.peer.replace('limely-', '');
-                        const accept = confirm('Incoming call from ' + callerName + '! Answer?');
-                        if (accept) {
-                            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                                .then((stream) => {
-                                    localAudioStream = stream;
-                                    call.answer(stream);
-                                    setupCallStream(call, callerName);
-                                })
-                                .catch(() => alert('Microphone access required to answer voice calls.'));
-                        }
-                    });
-                }
-
-                function callFriend(friendUser) {
-                    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                        .then((stream) => {
-                            localAudioStream = stream;
-                            const peerId = 'limely-' + friendUser.toLowerCase();
-                            const call = peer.call(peerId, stream);
-                            setupCallStream(call, friendUser);
-                        })
-                        .catch(() => alert('Microphone access required to make voice calls!'));
-                }
-
-                function setupCallStream(call, friendUser) {
-                    currentCall = call;
-                    document.getElementById('call-bar').style.display = 'block';
-                    document.getElementById('call-target').innerText = friendUser;
-
-                    call.on('stream', (remoteStream) => {
-                        document.getElementById('remote-audio').srcObject = remoteStream;
-                    });
-
-                    call.on('close', () => endVoiceCall());
-                }
-
-                function endVoiceCall() {
-                    if (currentCall) currentCall.close();
-                    if (localAudioStream) localAudioStream.getTracks().forEach(track => track.stop());
-                    document.getElementById('call-bar').style.display = 'none';
-                }
-
-                // --- Profiles & Friends Logic ---
-                async function saveProfile() {
-                    const username = localStorage.getItem('limely_username');
-                    const bio = document.getElementById('edit-bio').value;
-                    const avatar_url = document.getElementById('edit-avatar').value;
-
+                // --- Live Chat Logic ---
+                async function fetchMessages() {
                     try {
-                        const res = await fetch('/api/profile/update', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username, bio, avatar_url })
-                        });
+                        const res = await fetch('/api/chat/messages');
                         const data = await res.json();
-                        alert(data.message);
-                        if (avatar_url) document.getElementById('my-avatar-preview').src = avatar_url;
-                    } catch(e) {
-                        alert('Saved locally!');
-                    }
-                }
+                        const box = document.getElementById('chat-messages-box');
 
-                async function loadProfile(username) {
-                    try {
-                        const res = await fetch('/api/profile/' + username);
-                        const data = await res.json();
-                        if (data.success && data.profile) {
-                            if (data.profile.bio) document.getElementById('edit-bio').value = data.profile.bio;
-                            if (data.profile.avatar_url) {
-                                document.getElementById('edit-avatar').value = data.profile.avatar_url;
-                                document.getElementById('my-avatar-preview').src = data.profile.avatar_url;
+                        if (data.success && data.messages.length > 0) {
+                            let html = '';
+                            for (let i = 0; i < data.messages.length; i++) {
+                                const m = data.messages[i];
+                                html += '<div class="chat-msg"><span class="chat-msg-user">' + m.username + ':</span> <span class="chat-msg-text">' + m.message + '</span></div>';
                             }
+                            box.innerHTML = html;
+                            box.scrollTop = box.scrollHeight;
+                        } else {
+                            box.innerHTML = '<p style="color:#88cc99; text-align:center;">No messages yet. Be the first to say hi!</p>';
                         }
                     } catch(e) {}
                 }
 
-                async function loadFriends() {
-                    const username = localStorage.getItem('limely_username');
-                    if (!username) return;
+                async function sendMessage() {
+                    const username = localStorage.getItem('limely_username') || 'Guest';
+                    const input = document.getElementById('chat-input');
+                    const message = input.value.trim();
 
-                    const listDiv = document.getElementById('friends-list');
-                    try {
-                        const res = await fetch('/api/friends/' + username);
-                        const data = await res.json();
-
-                        if (data.success && data.friends.length > 0) {
-                            let html = '';
-                            for (let i = 0; i < data.friends.length; i++) {
-                                const f = data.friends[i];
-                                html += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
-                                        '<span>👤 ' + f + '</span>' +
-                                        '<button class="modal-btn" style="padding:2px 8px; font-size:0.75rem; margin:0;" onclick="callFriend(\'' + f + '\')">📞 Call</button>' +
-                                        '</div>';
-                            }
-                            listDiv.innerHTML = html;
-                        } else {
-                            listDiv.innerHTML = '<p style="color:#88cc99; text-align:center;">No friends added yet.</p>';
-                        }
-                    } catch(e) {
-                        listDiv.innerHTML = '<p style="color:#88cc99; text-align:center;">No friends added yet.</p>';
-                    }
-                }
-
-                async function addFriend() {
-                    const username = localStorage.getItem('limely_username');
-                    const friendUsername = document.getElementById('friend-username-input').value.trim();
+                    if (!message) return;
+                    input.value = '';
 
                     try {
-                        const res = await fetch('/api/friends/add', {
+                        await fetch('/api/chat/send', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username, friendUsername })
+                            body: JSON.stringify({ username, message })
                         });
-                        const data = await res.json();
-                        alert(data.message);
-                        if (data.success) loadFriends();
-                    } catch(e) {
-                        alert('Could not add friend');
-                    }
+                        fetchMessages();
+                    } catch(e) {}
                 }
+
+                // Poll chat messages every 3 seconds
+                setInterval(fetchMessages, 3000);
 
                 window.addEventListener('DOMContentLoaded', () => {
                     const savedUser = localStorage.getItem('limely_username');
                     if (savedUser) {
                         document.getElementById('user-display').innerText = '👤 ' + savedUser;
                         document.getElementById('onboarding-overlay').style.display = 'none';
-                        try { initVoiceCalls(savedUser); } catch(e) {}
-                        try { loadFriends(); } catch(e) {}
-                        try { loadProfile(savedUser); } catch(e) {}
+                        fetchMessages();
                     }
                 });
 
