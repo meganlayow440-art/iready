@@ -306,7 +306,7 @@ router.get('/home', (req, res) => {
                     <input type="password" id="password-input" class="modal-input" placeholder="Enter Bio/Pin...">
                     <div id="auth-error" class="error-msg"></div>
                     <br>
-                    <button class="modal-btn" onclick="handleAuth()">Submit</button>
+                    <button class="modal-btn" type="button" id="submit-btn" onclick="handleAuth()">Submit</button>
                 </div>
             </div>
 
@@ -418,43 +418,37 @@ router.get('/home', (req, res) => {
             </div>
 
             <script>
-                console.log("[DEBUG] secret.js loaded cleanly.");
+                console.log("!!! DEBUG SCRIPT STARTING !!!");
 
                 let peer = null;
                 let currentCall = null;
                 let localAudioStream = null;
 
                 function handleAuth() {
-                    console.log("[DEBUG] handleAuth() triggered!");
+                    alert("Submit Clicked!");
+                    console.log("[DEBUG] handleAuth() fired");
                     const username = document.getElementById('username-input').value.trim();
                     const errorDiv = document.getElementById('auth-error');
 
-                    console.log("[DEBUG] Username input value:", username);
-
                     if (!username) {
-                        console.warn("[DEBUG] Username empty! Displaying error message.");
+                        alert("Please enter a username!");
                         errorDiv.innerText = 'Please enter a username';
                         errorDiv.style.display = 'block';
                         return;
                     }
 
                     errorDiv.style.display = 'none';
-                    console.log("[DEBUG] Saving username to localStorage...");
                     localStorage.setItem('limely_username', username);
-                    
                     document.getElementById('user-display').innerText = '👤 ' + username;
                     
-                    console.log("[DEBUG] Initializing voice calls, friends list, and profile...");
-                    initVoiceCalls(username);
-                    loadFriends();
-                    loadProfile(username);
+                    try { initVoiceCalls(username); } catch(e) { console.error(e); }
+                    try { loadFriends(); } catch(e) { console.error(e); }
+                    try { loadProfile(username); } catch(e) { console.error(e); }
                     
-                    console.log("[DEBUG] Closing onboarding overlay now!");
                     closeOnboarding();
                 }
 
                 function switchAccount() {
-                    console.log("[DEBUG] switchAccount() called.");
                     localStorage.removeItem('limely_username');
                     document.getElementById('username-input').value = '';
                     document.getElementById('password-input').value = '';
@@ -463,12 +457,11 @@ router.get('/home', (req, res) => {
                 }
 
                 function closeOnboarding() {
-                    console.log("[DEBUG] closeOnboarding() hiding overlay.");
+                    console.log("[DEBUG] Closing onboarding overlay");
                     document.getElementById('onboarding-overlay').style.display = 'none';
                 }
 
                 function openGame(url) {
-                    console.log("[DEBUG] Opening game with URL:", url);
                     document.getElementById('game-iframe').src = url;
                     document.getElementById('main-view').style.display = 'none';
                     document.getElementById('game-view').style.display = 'flex';
@@ -476,7 +469,6 @@ router.get('/home', (req, res) => {
 
                 function openCustomUrl() {
                     let inputUrl = document.getElementById('custom-url-field').value.trim();
-                    console.log("[DEBUG] openCustomUrl() field value:", inputUrl);
                     if (!inputUrl) return;
 
                     if (!inputUrl.startsWith('http://') && !inputUrl.startsWith('https://')) {
@@ -487,7 +479,6 @@ router.get('/home', (req, res) => {
                 }
 
                 function closeGame() {
-                    console.log("[DEBUG] Closing game view.");
                     document.getElementById('game-iframe').src = '';
                     document.getElementById('game-view').style.display = 'none';
                     document.getElementById('main-view').style.display = 'block';
@@ -495,77 +486,48 @@ router.get('/home', (req, res) => {
 
                 // --- Voice Calls & PeerJS ---
                 function initVoiceCalls(username) {
-                    console.log("[DEBUG] initVoiceCalls() starting for username:", username);
-                    try {
-                        peer = new Peer('limely-' + username.toLowerCase());
-                        console.log("[DEBUG] PeerJS object created:", peer);
+                    console.log("[DEBUG] initVoiceCalls", username);
+                    peer = new Peer('limely-' + username.toLowerCase());
 
-                        peer.on('open', (id) => {
-                            console.log("[DEBUG] PeerJS connected successfully with Peer ID:", id);
-                        });
-
-                        peer.on('error', (err) => {
-                            console.error("[DEBUG] PeerJS error caught:", err);
-                        });
-
-                        peer.on('call', (call) => {
-                            console.log("[DEBUG] Incoming call event from peer:", call.peer);
-                            const callerName = call.peer.replace('limely-', '');
-                            const accept = confirm('Incoming call from ' + callerName + '! Answer?');
-                            if (accept) {
-                                navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-                                    .then((stream) => {
-                                        console.log("[DEBUG] Microphone audio stream acquired for answering call.");
-                                        localAudioStream = stream;
-                                        call.answer(stream);
-                                        setupCallStream(call, callerName);
-                                    })
-                                    .catch((err) => {
-                                        console.error("[DEBUG] Mic error answering call:", err);
-                                        alert('Microphone access required to answer voice calls.');
-                                    });
-                            }
-                        });
-                    } catch(e) {
-                        console.error("[DEBUG] Error setting up PeerJS:", e);
-                    }
+                    peer.on('call', (call) => {
+                        const callerName = call.peer.replace('limely-', '');
+                        const accept = confirm('Incoming call from ' + callerName + '! Answer?');
+                        if (accept) {
+                            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                                .then((stream) => {
+                                    localAudioStream = stream;
+                                    call.answer(stream);
+                                    setupCallStream(call, callerName);
+                                })
+                                .catch(() => alert('Microphone access required to answer voice calls.'));
+                        }
+                    });
                 }
 
                 function callFriend(friendUser) {
-                    console.log("[DEBUG] Initiating call to friend:", friendUser);
                     navigator.mediaDevices.getUserMedia({ audio: true, video: false })
                         .then((stream) => {
-                            console.log("[DEBUG] Local mic stream ready. Calling peer ID:", 'limely-' + friendUser.toLowerCase());
                             localAudioStream = stream;
                             const peerId = 'limely-' + friendUser.toLowerCase();
                             const call = peer.call(peerId, stream);
                             setupCallStream(call, friendUser);
                         })
-                        .catch((err) => {
-                            console.error("[DEBUG] Mic permission denied/error:", err);
-                            alert('Microphone access required to make voice calls!');
-                        });
+                        .catch(() => alert('Microphone access required to make voice calls!'));
                 }
 
                 function setupCallStream(call, friendUser) {
-                    console.log("[DEBUG] Setting up call stream UI with target:", friendUser);
                     currentCall = call;
                     document.getElementById('call-bar').style.display = 'block';
                     document.getElementById('call-target').innerText = friendUser;
 
                     call.on('stream', (remoteStream) => {
-                        console.log("[DEBUG] Received remote audio stream!");
                         document.getElementById('remote-audio').srcObject = remoteStream;
                     });
 
-                    call.on('close', () => {
-                        console.log("[DEBUG] Call closed by remote peer.");
-                        endVoiceCall();
-                    });
+                    call.on('close', () => endVoiceCall());
                 }
 
                 function endVoiceCall() {
-                    console.log("[DEBUG] Ending voice call...");
                     if (currentCall) currentCall.close();
                     if (localAudioStream) localAudioStream.getTracks().forEach(track => track.stop());
                     document.getElementById('call-bar').style.display = 'none';
@@ -576,7 +538,6 @@ router.get('/home', (req, res) => {
                     const username = localStorage.getItem('limely_username');
                     const bio = document.getElementById('edit-bio').value;
                     const avatar_url = document.getElementById('edit-avatar').value;
-                    console.log("[DEBUG] saveProfile() triggered for user:", username, { bio, avatar_url });
 
                     try {
                         const res = await fetch('/api/profile/update', {
@@ -585,21 +546,17 @@ router.get('/home', (req, res) => {
                             body: JSON.stringify({ username, bio, avatar_url })
                         });
                         const data = await res.json();
-                        console.log("[DEBUG] Save profile response:", data);
                         alert(data.message);
                         if (avatar_url) document.getElementById('my-avatar-preview').src = avatar_url;
                     } catch(e) {
-                        console.error("[DEBUG] saveProfile error:", e);
                         alert('Saved locally!');
                     }
                 }
 
                 async function loadProfile(username) {
-                    console.log("[DEBUG] Fetching profile for username:", username);
                     try {
                         const res = await fetch('/api/profile/' + username);
                         const data = await res.json();
-                        console.log("[DEBUG] Profile fetch response:", data);
                         if (data.success && data.profile) {
                             if (data.profile.bio) document.getElementById('edit-bio').value = data.profile.bio;
                             if (data.profile.avatar_url) {
@@ -607,21 +564,17 @@ router.get('/home', (req, res) => {
                                 document.getElementById('my-avatar-preview').src = data.profile.avatar_url;
                             }
                         }
-                    } catch(e) {
-                        console.error("[DEBUG] loadProfile error:", e);
-                    }
+                    } catch(e) {}
                 }
 
                 async function loadFriends() {
                     const username = localStorage.getItem('limely_username');
-                    console.log("[DEBUG] loadFriends() starting for username:", username);
                     if (!username) return;
 
                     const listDiv = document.getElementById('friends-list');
                     try {
                         const res = await fetch('/api/friends/' + username);
                         const data = await res.json();
-                        console.log("[DEBUG] loadFriends response:", data);
 
                         if (data.success && data.friends.length > 0) {
                             let html = '';
@@ -637,7 +590,6 @@ router.get('/home', (req, res) => {
                             listDiv.innerHTML = '<p style="color:#88cc99; text-align:center;">No friends added yet.</p>';
                         }
                     } catch(e) {
-                        console.error("[DEBUG] loadFriends error:", e);
                         listDiv.innerHTML = '<p style="color:#88cc99; text-align:center;">No friends added yet.</p>';
                     }
                 }
@@ -645,7 +597,6 @@ router.get('/home', (req, res) => {
                 async function addFriend() {
                     const username = localStorage.getItem('limely_username');
                     const friendUsername = document.getElementById('friend-username-input').value.trim();
-                    console.log("[DEBUG] addFriend() attempt:", { username, friendUsername });
 
                     try {
                         const res = await fetch('/api/friends/add', {
@@ -654,29 +605,22 @@ router.get('/home', (req, res) => {
                             body: JSON.stringify({ username, friendUsername })
                         });
                         const data = await res.json();
-                        console.log("[DEBUG] addFriend response:", data);
                         alert(data.message);
                         if (data.success) loadFriends();
                     } catch(e) {
-                        console.error("[DEBUG] addFriend error:", e);
                         alert('Could not add friend');
                     }
                 }
 
                 window.addEventListener('DOMContentLoaded', () => {
-                    console.log("[DEBUG] DOMContentLoaded fired.");
+                    console.log("[DEBUG] DOM Loaded");
                     const savedUser = localStorage.getItem('limely_username');
-                    console.log("[DEBUG] Check saved user in localStorage:", savedUser);
-
                     if (savedUser) {
-                        console.log("[DEBUG] User session found. Skipping overlay.");
                         document.getElementById('user-display').innerText = '👤 ' + savedUser;
                         document.getElementById('onboarding-overlay').style.display = 'none';
-                        initVoiceCalls(savedUser);
-                        loadFriends();
-                        loadProfile(savedUser);
-                    } else {
-                        console.log("[DEBUG] No saved user session. Overlay remains visible.");
+                        try { initVoiceCalls(savedUser); } catch(e) {}
+                        try { loadFriends(); } catch(e) {}
+                        try { loadProfile(savedUser); } catch(e) {}
                     }
                 });
 
