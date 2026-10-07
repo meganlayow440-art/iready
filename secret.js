@@ -298,15 +298,15 @@ router.get('/home', (req, res) => {
             </style>
         </head>
         <body>
-            <!-- Direct Login Overlay -->
+            <!-- Onboarding Overlay -->
             <div id="onboarding-overlay">
                 <div class="modal-card">
-                    <h3>Limely Account Setup</h3>
-                    <input type="text" id="username-input" class="modal-input" placeholder="Enter Username...">
-                    <input type="password" id="password-input" class="modal-input" placeholder="Enter Bio/Pin...">
+                    <h2>Welcome to Limely.</h2>
+                    <p>Enter your display name to start:</p>
+                    <input type="text" id="username-input" class="modal-input" placeholder="Username...">
                     <div id="auth-error" class="error-msg"></div>
                     <br>
-                    <button class="modal-btn" type="button" id="submit-btn" onclick="handleAuth()">Submit</button>
+                    <button class="modal-btn" type="button" id="submit-btn" onclick="handleAuth()">Enter Site</button>
                 </div>
             </div>
 
@@ -418,47 +418,49 @@ router.get('/home', (req, res) => {
             </div>
 
             <script>
-                console.log("!!! DEBUG SCRIPT STARTING !!!");
-
                 let peer = null;
                 let currentCall = null;
                 let localAudioStream = null;
 
                 function handleAuth() {
-                    alert("Submit Clicked!");
-                    console.log("[DEBUG] handleAuth() fired");
-                    const username = document.getElementById('username-input').value.trim();
+                    const inputEl = document.getElementById('username-input');
+                    const username = inputEl ? inputEl.value.trim() : '';
                     const errorDiv = document.getElementById('auth-error');
 
                     if (!username) {
-                        alert("Please enter a username!");
-                        errorDiv.innerText = 'Please enter a username';
-                        errorDiv.style.display = 'block';
+                        if (errorDiv) {
+                            errorDiv.innerText = 'Please enter a username';
+                            errorDiv.style.display = 'block';
+                        }
                         return;
                     }
 
-                    errorDiv.style.display = 'none';
+                    if (errorDiv) errorDiv.style.display = 'none';
+                    
                     localStorage.setItem('limely_username', username);
-                    document.getElementById('user-display').innerText = '👤 ' + username;
                     
-                    try { initVoiceCalls(username); } catch(e) { console.error(e); }
-                    try { loadFriends(); } catch(e) { console.error(e); }
-                    try { loadProfile(username); } catch(e) { console.error(e); }
-                    
-                    closeOnboarding();
+                    const userDisplay = document.getElementById('user-display');
+                    if (userDisplay) userDisplay.innerText = '👤 ' + username;
+
+                    // Immediately hide overlay so the user enters the site
+                    const overlay = document.getElementById('onboarding-overlay');
+                    if (overlay) overlay.style.display = 'none';
+
+                    // Background loads
+                    try { initVoiceCalls(username); } catch(e) {}
+                    try { loadFriends(); } catch(e) {}
+                    try { loadProfile(username); } catch(e) {}
                 }
 
                 function switchAccount() {
                     localStorage.removeItem('limely_username');
-                    document.getElementById('username-input').value = '';
-                    document.getElementById('password-input').value = '';
-                    document.getElementById('auth-error').style.display = 'none';
-                    document.getElementById('onboarding-overlay').style.display = 'flex';
-                }
-
-                function closeOnboarding() {
-                    console.log("[DEBUG] Closing onboarding overlay");
-                    document.getElementById('onboarding-overlay').style.display = 'none';
+                    const inputEl = document.getElementById('username-input');
+                    if (inputEl) inputEl.value = '';
+                    const errorDiv = document.getElementById('auth-error');
+                    if (errorDiv) errorDiv.style.display = 'none';
+                    
+                    const overlay = document.getElementById('onboarding-overlay');
+                    if (overlay) overlay.style.display = 'flex';
                 }
 
                 function openGame(url) {
@@ -486,7 +488,6 @@ router.get('/home', (req, res) => {
 
                 // --- Voice Calls & PeerJS ---
                 function initVoiceCalls(username) {
-                    console.log("[DEBUG] initVoiceCalls", username);
                     peer = new Peer('limely-' + username.toLowerCase());
 
                     peer.on('call', (call) => {
@@ -613,7 +614,6 @@ router.get('/home', (req, res) => {
                 }
 
                 window.addEventListener('DOMContentLoaded', () => {
-                    console.log("[DEBUG] DOM Loaded");
                     const savedUser = localStorage.getItem('limely_username');
                     if (savedUser) {
                         document.getElementById('user-display').innerText = '👤 ' + savedUser;
