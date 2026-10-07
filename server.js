@@ -5,7 +5,7 @@ const { createClient } = require('@supabase/supabase-js');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Supabase Connection Settings
+// Supabase Settings
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://hwhrsmftwowbxvauqopj.supabase.co';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3aHJzbWZ0d293Ynh2YXVxb3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzMTM1MjcsImV4cCI6MjEwNjg4OTUyN30.LhHsXtRzqkeeQW2IqOrKSLIQSvVGiakySHKpUHyXIYg';
 
@@ -35,8 +35,7 @@ app.post('/login', (req, res) => {
 // Mount secret script routes
 app.use('/i-ready', secretRouter);
 
-// --- Chat Room API Routes ---
-
+// Chat Room API Routes
 app.post('/api/chat/send', async (req, res) => {
     const { username, password, message } = req.body;
     if (!username || !message) return res.status(400).json({ success: false, message: 'Missing fields' });
