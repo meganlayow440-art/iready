@@ -329,8 +329,9 @@ router.get('/home', (req, res) => {
             <div id="onboarding-overlay">
                 <div class="modal-card">
                     <h2>Welcome to Limely.</h2>
-                    <p>Enter your display name for chat:</p>
-                    <input type="text" id="username-input" class="modal-input" placeholder="Username...">
+                    <p>Log in to chat. New username? An account is created with the password you enter.</p>
+                    <input type="text" id="username-input" class="modal-input" placeholder="Username..." maxlength="20" autocomplete="username">
+                    <input type="password" id="password-input" class="modal-input" placeholder="Password..." maxlength="100" autocomplete="current-password" onkeydown="if(event.key==='Enter') handleAuth()">
                     <div id="auth-error" class="error-msg"></div>
                     <br>
                     <button class="modal-btn" type="button" onclick="handleAuth()">Enter Site</button>
@@ -423,37 +424,75 @@ router.get('/home', (req, res) => {
             </div>
 
             <script>
-                function handleAuth() {
-                    const inputEl = document.getElementById('username-input');
-                    const username = inputEl ? inputEl.value.trim() : '';
+                function escapeHtml(str) {
+                    return String(str)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                }
+
+                function showAuthError(text) {
+                    const errorDiv = document.getElementById('auth-error');
+                    if (errorDiv) {
+                        errorDiv.innerText = text;
+                        errorDiv.style.display = 'block';
+                    }
+                }
+
+                function showLogin(message) {
+                    localStorage.removeItem('limely_username');
+                    localStorage.removeItem('limely_token');
+                    document.getElementById('user-display').innerText = '👤 Guest';
+                    const overlay = document.getElementById('onboarding-overlay');
+                    if (overlay) overlay.style.display = 'flex';
+                    if (message) showAuthError(message);
+                }
+
+                async function handleAuth() {
+                    const usernameEl = document.getElementById('username-input');
+                    const passwordEl = document.getElementById('password-input');
+                    const username = usernameEl ? usernameEl.value.trim() : '';
+                    const password = passwordEl ? passwordEl.value : '';
                     const errorDiv = document.getElementById('auth-error');
 
-                    if (!username) {
-                        if (errorDiv) {
-                            errorDiv.innerText = 'Please enter a username';
-                            errorDiv.style.display = 'block';
-                        }
-                        return;
-                    }
+                    if (!username) { showAuthError('Please enter a username'); return; }
+                    if (!password) { showAuthError('Please enter a password'); return; }
 
                     if (errorDiv) errorDiv.style.display = 'none';
-                    localStorage.setItem('limely_username', username);
-                    
-                    const userDisplay = document.getElementById('user-display');
-                    if (userDisplay) userDisplay.innerText = '👤 ' + username;
 
-                    const overlay = document.getElementById('onboarding-overlay');
-                    if (overlay) overlay.style.display = 'none';
+                    try {
+                        const res = await fetch('/api/chat/auth', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, password })
+                        });
+                        const data = await res.json();
 
-                    fetchMessages();
+                        if (!data.success) {
+                            showAuthError(data.message || 'Login failed');
+                            return;
+                        }
+
+                        localStorage.setItem('limely_username', data.username);
+                        localStorage.setItem('limely_token', data.token);
+                        if (passwordEl) passwordEl.value = '';
+
+                        document.getElementById('user-display').innerText = '👤 ' + data.username;
+                        document.getElementById('onboarding-overlay').style.display = 'none';
+                        fetchMessages();
+                    } catch (e) {
+                        showAuthError('Could not reach the server');
+                    }
                 }
 
                 function switchAccount() {
-                    localStorage.removeItem('limely_username');
-                    const inputEl = document.getElementById('username-input');
-                    if (inputEl) inputEl.value = '';
-                    const overlay = document.getElementById('onboarding-overlay');
-                    if (overlay) overlay.style.display = 'flex';
+                    const usernameEl = document.getElementById('username-input');
+                    const passwordEl = document.getElementById('password-input');
+                    if (usernameEl) usernameEl.value = '';
+                    if (passwordEl) passwordEl.value = '';
+                    showLogin();
                 }
 
                 function openGame(url) {
@@ -490,7 +529,7 @@ router.get('/home', (req, res) => {
                             let html = '';
                             for (let i = 0; i < data.messages.length; i++) {
                                 const m = data.messages[i];
-                                html += '<div class="chat-msg"><span class="chat-msg-user">' + m.username + ':</span> <span class="chat-msg-text">' + m.message + '</span></div>';
+                                html += '<div class="chat-msg"><span class="chat-msg-user">' + escapeHtml(m.username) + ':</span> <span class="chat-msg-text">' + escapeHtml(m.message) + '</span></div>';
                             }
                             box.innerHTML = html;
                             box.scrollTop = box.scrollHeight;
@@ -501,19 +540,29 @@ router.get('/home', (req, res) => {
                 }
 
                 async function sendMessage() {
-                    const username = localStorage.getItem('limely_username') || 'Guest';
+                    const token = localStorage.getItem('limely_token');
                     const input = document.getElementById('chat-input');
                     const message = input.value.trim();
 
                     if (!message) return;
+                    if (!token) { showLogin('Please log in to chat'); return; }
                     input.value = '';
 
                     try {
-                        await fetch('/api/chat/send', {
+                        const res = await fetch('/api/chat/send', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username, message })
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + token
+                            },
+                            body: JSON.stringify({ message })
                         });
+
+                        if (res.status === 401) {
+                            input.value = message;
+                            showLogin('Session expired, please log in again');
+                            return;
+                        }
                         fetchMessages();
                     } catch(e) {}
                 }
@@ -523,7 +572,8 @@ router.get('/home', (req, res) => {
 
                 window.addEventListener('DOMContentLoaded', () => {
                     const savedUser = localStorage.getItem('limely_username');
-                    if (savedUser) {
+                    const savedToken = localStorage.getItem('limely_token');
+                    if (savedUser && savedToken) {
                         document.getElementById('user-display').innerText = '👤 ' + savedUser;
                         document.getElementById('onboarding-overlay').style.display = 'none';
                         fetchMessages();
